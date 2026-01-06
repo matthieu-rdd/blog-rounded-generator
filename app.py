@@ -118,6 +118,8 @@ if 'edit_mode' not in st.session_state:
 
 # Sidebar avec informations
 with st.sidebar:
+    st.markdown("## Rounded")
+    st.markdown("---")
     st.title("Navigation")
     st.markdown("---")
     
@@ -192,16 +194,20 @@ if not st.session_state.get('authenticated', False):
     
     st.markdown('<div class="login-title">Assistant Rédaction Blog Rounded</div>', unsafe_allow_html=True)
     
-    username = st.text_input("Nom d'utilisateur", placeholder="Entrez votre nom d'utilisateur")
     password = st.text_input("Mot de passe", type="password", placeholder="Entrez votre mot de passe")
     
-    if st.button("Se connecter", type="primary", use_container_width=True):
-        if username == "rounded" and password == "Rounded18!":
-            st.session_state.authenticated = True
-            st.success("Connexion réussie !")
-            st.rerun()
-        else:
-            st.error("Nom d'utilisateur ou mot de passe incorrect")
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        if st.button("Se connecter", type="primary", use_container_width=True):
+            if password == "Rounded18!":
+                st.session_state.authenticated = True
+                st.rerun()
+            else:
+                st.error("Mot de passe incorrect")
+    
+    with col2:
+        if st.button("Annuler", use_container_width=True):
+            st.stop()
     
     st.markdown("""
         </div>
