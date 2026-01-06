@@ -463,6 +463,107 @@ if st.session_state.get('page') == 'history':
     # Arrêter ici si on est en mode historique
     st.stop()
 
+# --- PAGE TOKENS OPENAI ---
+if st.session_state.get('page') == 'tokens':
+    st.header("📊 Historique des Tokens OpenAI")
+    
+    try:
+        from utils.token_tracker import get_token_statistics, estimate_cost, load_token_history
+        
+        stats = get_token_statistics()
+        history = load_token_history()
+        
+        if stats["total_entries"] == 0:
+            st.info("Aucun historique de tokens disponible. Les tokens seront enregistrés lors de la génération d'articles.")
+        else:
+            # Statistiques globales
+            st.subheader("📈 Statistiques Globales")
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric("Total Entrées", stats["total_entries"])
+            with col2:
+                st.metric("Total Tokens", f"{stats['total_tokens']:,}")
+            with col3:
+                st.metric("Tokens Prompt", f"{stats['total_prompt_tokens']:,}")
+            with col4:
+                estimated_cost_val = estimate_cost(stats["total_tokens"])
+                st.metric("Coût Estimé", f"${estimated_cost_val:.4f}")
+            
+            st.markdown("---")
+            
+            # Par opération
+            if stats["by_operation"]:
+                st.subheader("🔧 Par Opération")
+                for operation, data in stats["by_operation"].items():
+                    with st.expander(f"{operation} ({data['count']} appels)", expanded=False):
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            st.metric("Total Tokens", f"{data['total_tokens']:,}")
+                        with col2:
+                            st.metric("Prompt Tokens", f"{data['prompt_tokens']:,}")
+                        with col3:
+                            st.metric("Completion Tokens", f"{data['completion_tokens']:,}")
+                        st.caption(f"Coût estimé: ${estimate_cost(data['total_tokens']):.4f}")
+            
+            st.markdown("---")
+            
+            # Par modèle
+            if stats["by_model"]:
+                st.subheader("🤖 Par Modèle")
+                for model, data in stats["by_model"].items():
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.metric(f"{model}", f"{data['count']} appels")
+                    with col2:
+                        st.metric("Total Tokens", f"{data['total_tokens']:,}")
+            
+            st.markdown("---")
+            
+            # Historique récent
+            st.subheader("📝 Historique Récent (10 dernières entrées)")
+            if stats["recent_entries"]:
+                for entry in reversed(stats["recent_entries"]):
+                    with st.expander(
+                        f"{entry.get('operation', 'unknown')} - {entry.get('timestamp', '')[:19]}",
+                        expanded=False
+                    ):
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            st.metric("Total", f"{entry.get('total_tokens', 0):,}")
+                        with col2:
+                            st.metric("Prompt", f"{entry.get('prompt_tokens', 0):,}")
+                        with col3:
+                            st.metric("Completion", f"{entry.get('completion_tokens', 0):,}")
+                        
+                        if entry.get("article_title"):
+                            st.caption(f"Article: {entry['article_title']}")
+                        if entry.get("topic"):
+                            st.caption(f"Sujet: {entry['topic']}")
+                        st.caption(f"Modèle: {entry.get('model', 'N/A')}")
+                        st.caption(f"Coût: ${estimate_cost(entry.get('total_tokens', 0)):.6f}")
+            
+            st.markdown("---")
+            
+            # Export
+            st.subheader("💾 Export")
+            if st.button("Télécharger l'historique complet (JSON)", use_container_width=True):
+                import json
+                history_json = json.dumps(history, indent=2, ensure_ascii=False)
+                st.download_button(
+                    label="📥 Télécharger",
+                    data=history_json,
+                    file_name=f"token_history_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                    mime="application/json"
+                )
+    
+    except Exception as e:
+        st.error(f"Erreur lors du chargement de l'historique: {e}")
+        import traceback
+        st.code(traceback.format_exc())
+    
+    st.stop()
+
 # --- ÉTAPE 1 : SAISIE DU SUJET ---
 if st.session_state.step == 'input':
     st.header("Nouveau sujet d'article")
