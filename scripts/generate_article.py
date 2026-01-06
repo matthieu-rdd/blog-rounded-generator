@@ -374,6 +374,8 @@ def search_web_with_sources(query: str) -> dict:
         # Si pas de citations structurées, essayer d'extraire les URLs du contenu
         if not sources:
             import re
+            from urllib.parse import urlparse
+            
             # Chercher les URLs dans le contenu (format [1], [2], etc. ou URLs directes)
             url_pattern = r'https?://[^\s\)\]\>]+'
             urls = re.findall(url_pattern, content)
@@ -385,15 +387,61 @@ def search_web_with_sources(query: str) -> dict:
                     url = url.rstrip('.,;:!?)')
                     if url not in cleaned_urls:
                         cleaned_urls.append(url)
-                sources = [{"url": url} for url in cleaned_urls]
+                
+                # Créer des objets source avec domaine extrait
+                sources = []
+                for url in cleaned_urls:
+                    try:
+                        parsed = urlparse(url)
+                        domain = parsed.netloc
+                        sources.append({
+                            "url": url,
+                            "domain": domain,
+                            "name": domain.replace("www.", "")
+                        })
+                    except:
+                        sources.append({"url": url})
         
-        # Normaliser les sources (s'assurer qu'elles sont toutes des dicts)
+        # Normaliser les sources (s'assurer qu'elles sont toutes des dicts avec métadonnées)
         normalized_sources = []
         for source in sources:
             if isinstance(source, dict):
+                # Enrichir avec des métadonnées si manquantes
+                if "url" in source and "domain" not in source:
+                    try:
+                        from urllib.parse import urlparse
+                        parsed = urlparse(source["url"])
+                        source["domain"] = parsed.netloc
+                        if "name" not in source:
+                            source["name"] = parsed.netloc.replace("www.", "")
+                    except:
+                        pass
+                
+                # S'assurer qu'il y a au moins un titre/name
+                if "title" not in source and "name" not in source:
+                    if "domain" in source:
+                        source["name"] = source["domain"].replace("www.", "")
+                    elif "url" in source:
+                        try:
+                            from urllib.parse import urlparse
+                            parsed = urlparse(source["url"])
+                            source["name"] = parsed.netloc.replace("www.", "")
+                        except:
+                            source["name"] = "Source"
+                
                 normalized_sources.append(source)
             elif isinstance(source, str):
-                normalized_sources.append({"url": source})
+                # Si c'est juste une URL string, créer un dict
+                try:
+                    from urllib.parse import urlparse
+                    parsed = urlparse(source)
+                    normalized_sources.append({
+                        "url": source,
+                        "domain": parsed.netloc,
+                        "name": parsed.netloc.replace("www.", "")
+                    })
+                except:
+                    normalized_sources.append({"url": source, "name": "Source"})
         
         print("✅ Recherche terminée")
         return {

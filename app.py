@@ -547,19 +547,58 @@ elif st.session_state.step == 'variants':
     
     st.info(f"**Sujet :** {st.session_state.topic}")
     
-    # Afficher les sources trouvées
+    # Afficher les mots-clés ciblés
+    if st.session_state.get('target_keywords'):
+        with st.expander(f"🎯 Mots-clés ciblés ({len(st.session_state.target_keywords)} mots-clés)", expanded=False):
+            # Afficher les mots-clés par groupes
+            keywords = st.session_state.target_keywords
+            cols = st.columns(3)
+            chunk_size = len(keywords) // 3 + 1
+            for i, col in enumerate(cols):
+                with col:
+                    start_idx = i * chunk_size
+                    end_idx = min((i + 1) * chunk_size, len(keywords))
+                    for keyword in keywords[start_idx:end_idx]:
+                        st.markdown(f"• {keyword}")
+        st.markdown("---")
+    
+    # Afficher les sources trouvées avec détails
     if st.session_state.get('web_sources'):
-        with st.expander(f"📚 Sources Web trouvées ({len(st.session_state.web_sources)})", expanded=False):
+        with st.expander(f"📚 Sources Web trouvées ({len(st.session_state.web_sources)} sources)", expanded=False):
             for idx, source in enumerate(st.session_state.web_sources, 1):
+                st.markdown(f"### Source {idx}")
+                
                 if isinstance(source, dict):
+                    # Extraire toutes les informations disponibles
                     url = source.get("url", source.get("link", ""))
-                    title = source.get("title", source.get("name", f"Source {idx}"))
+                    title = source.get("title", source.get("name", ""))
+                    description = source.get("description", source.get("snippet", ""))
+                    domain = source.get("domain", "")
+                    
+                    # Afficher le titre ou le nom
+                    if title:
+                        st.markdown(f"**Titre :** {title}")
+                    
+                    # Afficher l'URL
                     if url:
-                        st.markdown(f"{idx}. [{title}]({url})" if title else f"{idx}. {url}")
-                    else:
-                        st.markdown(f"{idx}. {title if title else source}")
+                        st.markdown(f"**URL :** [{url}]({url})")
+                    elif domain:
+                        st.markdown(f"**Domaine :** {domain}")
+                    
+                    # Afficher la description si disponible
+                    if description:
+                        st.markdown(f"**Description :** {description}")
+                    
+                    # Afficher d'autres métadonnées si disponibles
+                    other_keys = {k: v for k, v in source.items() 
+                                 if k not in ["url", "link", "title", "name", "description", "snippet", "domain"]}
+                    if other_keys:
+                        st.json(other_keys)
                 elif isinstance(source, str):
-                    st.markdown(f"{idx}. {source}")
+                    st.markdown(f"**URL :** {source}")
+                
+                if idx < len(st.session_state.web_sources):
+                    st.markdown("---")
         st.markdown("---")
     
     if not st.session_state.variants:
@@ -640,20 +679,74 @@ elif st.session_state.step == 'generation':
         if st.session_state.final_article:
             art = st.session_state.final_article
             
-            # Afficher les sources utilisées
+            # Afficher les mots-clés utilisés dans l'article
+            if st.session_state.get('target_keywords') or art.get('keywords'):
+                with st.expander("🎯 Mots-clés ciblés et utilisés", expanded=False):
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        st.markdown("**Mots-clés ciblés :**")
+                        if st.session_state.get('target_keywords'):
+                            st.markdown(f"*{len(st.session_state.target_keywords)} mots-clés chargés*")
+                            keywords_preview = st.session_state.target_keywords[:10]
+                            for keyword in keywords_preview:
+                                st.markdown(f"• {keyword}")
+                            if len(st.session_state.target_keywords) > 10:
+                                st.caption(f"... et {len(st.session_state.target_keywords) - 10} autres")
+                    
+                    with col2:
+                        st.markdown("**Mots-clés dans l'article :**")
+                        article_keywords = art.get('keywords', [])
+                        if article_keywords:
+                            for keyword in article_keywords:
+                                st.markdown(f"• {keyword}")
+                        else:
+                            st.info("Aucun mot-clé spécifique extrait")
+                    
+                    # Focus keyword
+                    if art.get('focusKeyword'):
+                        st.markdown("---")
+                        st.markdown(f"**Focus Keyword :** `{art.get('focusKeyword')}`")
+                st.markdown("---")
+            
+            # Afficher les sources utilisées avec détails
             if st.session_state.get('web_sources'):
-                with st.expander(f"📚 Sources Web utilisées ({len(st.session_state.web_sources)})", expanded=False):
+                with st.expander(f"📚 Sources Web utilisées ({len(st.session_state.web_sources)} sources)", expanded=False):
                     for idx, source in enumerate(st.session_state.web_sources, 1):
+                        st.markdown(f"### Source {idx}")
+                        
                         if isinstance(source, dict):
+                            # Extraire toutes les informations disponibles
                             url = source.get("url", source.get("link", ""))
-                            title = source.get("title", source.get("name", f"Source {idx}"))
+                            title = source.get("title", source.get("name", ""))
+                            description = source.get("description", source.get("snippet", ""))
+                            domain = source.get("domain", "")
+                            
+                            # Afficher le titre ou le nom
+                            if title:
+                                st.markdown(f"**Titre :** {title}")
+                            
+                            # Afficher l'URL
                             if url:
-                                st.markdown(f"{idx}. [{title}]({url})" if title else f"{idx}. {url}")
-                            else:
-                                st.markdown(f"{idx}. {title if title else source}")
+                                st.markdown(f"**URL :** [{url}]({url})")
+                            elif domain:
+                                st.markdown(f"**Domaine :** {domain}")
+                            
+                            # Afficher la description si disponible
+                            if description:
+                                st.markdown(f"**Description :** {description}")
+                            
+                            # Afficher d'autres métadonnées si disponibles
+                            other_keys = {k: v for k, v in source.items() 
+                                         if k not in ["url", "link", "title", "name", "description", "snippet", "domain"]}
+                            if other_keys:
+                                st.json(other_keys)
                         elif isinstance(source, str):
-                            st.markdown(f"{idx}. {source}")
-                    st.markdown("---")
+                            st.markdown(f"**URL :** {source}")
+                        
+                        if idx < len(st.session_state.web_sources):
+                            st.markdown("---")
+                st.markdown("---")
             
             # Métadonnées SEO
             with st.expander("Métadonnées SEO", expanded=False):
