@@ -24,6 +24,21 @@ sys.path.insert(0, str(BASE_DIR))
 sys.path.insert(0, str(BASE_DIR / "scripts"))
 
 # Import des fonctions du script generate_article.py
+# On initialise les fonctions à None pour éviter les erreurs
+generate_topic_variants = None
+generate_article = None
+optimize_seo = None
+generate_english_version = None
+search_web = None
+load_existing_articles = None
+check_topic_exists = None
+get_existing_blog_topics = None
+publish_to_production = None
+fetch_sanity_references = None
+save_article_for_review = None
+load_target_keywords = None
+apply_style_refinement = None
+
 try:
     # On importe le module directement
     import importlib.util
@@ -31,6 +46,9 @@ try:
         "generate_article", 
         BASE_DIR / "scripts" / "generate_article.py"
     )
+    if spec is None or spec.loader is None:
+        raise ImportError("Impossible de charger le module generate_article")
+    
     generate_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(generate_module)
     
@@ -50,8 +68,8 @@ try:
     apply_style_refinement = generate_module.apply_style_refinement
     
 except Exception as e:
-    st.error(f"❌ Erreur d'import : {e}")
-    st.stop()
+    # On stocke l'erreur pour l'afficher après l'authentification
+    st.session_state.import_error = str(e)
 
 # CSS personnalisé
 st.markdown("""
@@ -277,27 +295,38 @@ if not st.session_state.get('authenticated', False):
     
     # Centrer le champ de mot de passe
     st.markdown('<div style="text-align: center; margin: 20px 0;">', unsafe_allow_html=True)
-    password = st.text_input("Mot de passe", type="password", placeholder="Entrez votre mot de passe")
+    password = st.text_input("Mot de passe", type="password", placeholder="Entrez votre mot de passe", key="password_input")
     st.markdown('</div>', unsafe_allow_html=True)
     
     # Centrer les boutons avec une colonne au milieu
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("Se connecter", type="primary", use_container_width=True):
+        login_clicked = st.button("Se connecter", type="primary", use_container_width=True, key="login_btn")
+        if login_clicked:
             if password == "Rounded18!":
                 st.session_state.authenticated = True
-                st.rerun()
+                # Ne pas utiliser st.rerun() ici, laisser Streamlit gérer le rerun naturel
             else:
                 st.error("Mot de passe incorrect")
-        
-        if st.button("Annuler", use_container_width=True):
-            st.stop()
+                st.session_state.login_error = True
     
     st.markdown("""
         </div>
     </div>
     """, unsafe_allow_html=True)
     
+    st.stop()
+
+# Vérifier les erreurs d'import après authentification
+if st.session_state.get('import_error'):
+    st.error(f"❌ Erreur d'import : {st.session_state.import_error}")
+    st.error("Vérifiez que tous les fichiers nécessaires sont présents dans le repository.")
+    st.stop()
+
+# Vérifier que toutes les fonctions sont chargées
+if any(f is None for f in [generate_topic_variants, generate_article, optimize_seo]):
+    st.error("❌ Erreur : Les fonctions nécessaires n'ont pas pu être chargées.")
+    st.error("Vérifiez que le fichier scripts/generate_article.py existe et est valide.")
     st.stop()
 
 # Titre principal
