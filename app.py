@@ -305,7 +305,7 @@ if not st.session_state.get('authenticated', False):
         if login_clicked:
             if password == "Rounded18!":
                 st.session_state.authenticated = True
-                # Ne pas utiliser st.rerun() ici, laisser Streamlit gérer le rerun naturel
+                st.rerun()  # Recharger la page pour afficher le contenu principal
             else:
                 st.error("Mot de passe incorrect")
                 st.session_state.login_error = True
