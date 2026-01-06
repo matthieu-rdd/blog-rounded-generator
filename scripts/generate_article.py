@@ -315,9 +315,14 @@ def check_topic_exists(topic: str, existing_topics: List[str]) -> bool:
 
 
 def search_web(query: str) -> str:
-    """Recherche web via Perplexity"""
+    """Recherche web via Perplexity - retourne le contenu"""
+    result = search_web_with_sources(query)
+    return result.get("content", "") if isinstance(result, dict) else result
+
+def search_web_with_sources(query: str) -> dict:
+    """Recherche web via Perplexity avec extraction des sources"""
     if not PERPLEXITY_API_KEY:
-        return ""
+        return {"content": "", "sources": []}
     
     print("🔍 Recherche web via Perplexity...")
     
@@ -342,12 +347,62 @@ def search_web(query: str) -> str:
             timeout=60
         )
         response.raise_for_status()
-        content = response.json()["choices"][0]["message"]["content"]
+        data = response.json()
+        
+        # Extraire le contenu
+        content = data["choices"][0]["message"]["content"]
+        
+        # Extraire les citations/sources
+        sources = []
+        
+        # Perplexity retourne les citations dans différents formats selon le modèle
+        # Format 1: Dans la réponse principale
+        if "citations" in data:
+            sources = data["citations"]
+        # Format 2: Dans le message
+        elif "choices" in data and len(data["choices"]) > 0:
+            message = data["choices"][0]["message"]
+            if "citations" in message:
+                sources = message["citations"]
+        
+        # Format 3: Dans les métadonnées de la réponse
+        if not sources and "choices" in data:
+            choice = data["choices"][0]
+            if "citations" in choice:
+                sources = choice["citations"]
+        
+        # Si pas de citations structurées, essayer d'extraire les URLs du contenu
+        if not sources:
+            import re
+            # Chercher les URLs dans le contenu (format [1], [2], etc. ou URLs directes)
+            url_pattern = r'https?://[^\s\)\]\>]+'
+            urls = re.findall(url_pattern, content)
+            if urls:
+                # Nettoyer les URLs (enlever les caractères de fin)
+                cleaned_urls = []
+                for url in urls:
+                    # Enlever les caractères de ponctuation à la fin
+                    url = url.rstrip('.,;:!?)')
+                    if url not in cleaned_urls:
+                        cleaned_urls.append(url)
+                sources = [{"url": url} for url in cleaned_urls]
+        
+        # Normaliser les sources (s'assurer qu'elles sont toutes des dicts)
+        normalized_sources = []
+        for source in sources:
+            if isinstance(source, dict):
+                normalized_sources.append(source)
+            elif isinstance(source, str):
+                normalized_sources.append({"url": source})
+        
         print("✅ Recherche terminée")
-        return content
+        return {
+            "content": content,
+            "sources": normalized_sources
+        }
     except Exception as e:
         print(f"⚠️  Erreur recherche Perplexity: {e}")
-        return ""
+        return {"content": "", "sources": []}
 
 
 def load_existing_articles() -> List[Dict[str, Any]]:

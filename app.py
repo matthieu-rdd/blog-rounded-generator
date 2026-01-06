@@ -30,6 +30,7 @@ generate_article = None
 optimize_seo = None
 generate_english_version = None
 search_web = None
+search_web_with_sources = None
 load_existing_articles = None
 check_topic_exists = None
 get_existing_blog_topics = None
@@ -58,6 +59,7 @@ try:
     optimize_seo = generate_module.optimize_seo
     generate_english_version = generate_module.generate_english_version
     search_web = generate_module.search_web
+    search_web_with_sources = generate_module.search_web_with_sources
     load_existing_articles = generate_module.load_existing_articles
     check_topic_exists = generate_module.check_topic_exists
     get_existing_blog_topics = generate_module.get_existing_blog_topics
@@ -145,6 +147,8 @@ if 'english_article' not in st.session_state:
     st.session_state.english_article = None
 if 'web_results' not in st.session_state:
     st.session_state.web_results = ""
+if 'web_sources' not in st.session_state:
+    st.session_state.web_sources = []
 if 'topic' not in st.session_state:
     st.session_state.topic = ""
 if 'target_keywords' not in st.session_state:
@@ -508,8 +512,13 @@ if st.session_state.step == 'input':
                 status_text.text("🌍 Recherche Web (Perplexity)...")
                 progress_bar.progress(50)
                 search_query = f"Recherche des données récentes, études de cas, statistiques 2025 sur {topic}, agents vocaux IA, secrétariat médical, cabinets médicaux, automatisation téléphonique"
-                web_results = search_web(search_query)
-                st.session_state.web_results = web_results
+                web_data = search_web_with_sources(search_query)
+                st.session_state.web_results = web_data.get("content", "")
+                st.session_state.web_sources = web_data.get("sources", [])
+                
+                # Afficher les sources trouvées
+                if st.session_state.web_sources:
+                    status_text.text(f"✅ {len(st.session_state.web_sources)} source(s) trouvée(s)")
                 
                 # Génération des variantes
                 status_text.text("💡 Génération de 3 variantes de sujets...")
@@ -537,6 +546,21 @@ elif st.session_state.step == 'variants':
     st.header("Choisissez un angle éditorial")
     
     st.info(f"**Sujet :** {st.session_state.topic}")
+    
+    # Afficher les sources trouvées
+    if st.session_state.get('web_sources'):
+        with st.expander(f"📚 Sources Web trouvées ({len(st.session_state.web_sources)})", expanded=False):
+            for idx, source in enumerate(st.session_state.web_sources, 1):
+                if isinstance(source, dict):
+                    url = source.get("url", source.get("link", ""))
+                    title = source.get("title", source.get("name", f"Source {idx}"))
+                    if url:
+                        st.markdown(f"{idx}. [{title}]({url})" if title else f"{idx}. {url}")
+                    else:
+                        st.markdown(f"{idx}. {title if title else source}")
+                elif isinstance(source, str):
+                    st.markdown(f"{idx}. {source}")
+        st.markdown("---")
     
     if not st.session_state.variants:
         st.warning("Aucune variante disponible. Retournez à l'étape précédente.")
@@ -615,6 +639,21 @@ elif st.session_state.step == 'generation':
         # Affichage de l'article généré
         if st.session_state.final_article:
             art = st.session_state.final_article
+            
+            # Afficher les sources utilisées
+            if st.session_state.get('web_sources'):
+                with st.expander(f"📚 Sources Web utilisées ({len(st.session_state.web_sources)})", expanded=False):
+                    for idx, source in enumerate(st.session_state.web_sources, 1):
+                        if isinstance(source, dict):
+                            url = source.get("url", source.get("link", ""))
+                            title = source.get("title", source.get("name", f"Source {idx}"))
+                            if url:
+                                st.markdown(f"{idx}. [{title}]({url})" if title else f"{idx}. {url}")
+                            else:
+                                st.markdown(f"{idx}. {title if title else source}")
+                        elif isinstance(source, str):
+                            st.markdown(f"{idx}. {source}")
+                    st.markdown("---")
             
             # Métadonnées SEO
             with st.expander("Métadonnées SEO", expanded=False):
