@@ -180,12 +180,14 @@ with st.sidebar:
     # Navigation entre pages
     page = st.radio(
         "Choisir une page",
-        ["Créer un article", "Historique"],
+        ["Créer un article", "Historique", "Tokens OpenAI"],
         label_visibility="collapsed"
     )
     
     if page == "Historique":
         st.session_state.page = "history"
+    elif page == "Tokens OpenAI":
+        st.session_state.page = "tokens"
     else:
         st.session_state.page = "create"
     

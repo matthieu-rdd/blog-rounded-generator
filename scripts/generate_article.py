@@ -536,6 +536,24 @@ Chaque élément doit avoir :
             temperature=0.8,
             max_tokens=1200,
         )
+        
+        # Tracker les tokens
+        if hasattr(response, 'usage') and response.usage:
+            try:
+                from utils.token_tracker import track_openai_usage
+                track_openai_usage(
+                    operation="generate_variants",
+                    model="gpt-4o-mini",
+                    usage={
+                        "prompt_tokens": response.usage.prompt_tokens,
+                        "completion_tokens": response.usage.completion_tokens,
+                        "total_tokens": response.usage.total_tokens
+                    },
+                    topic=topic
+                )
+            except Exception as e:
+                print(f"⚠️  Erreur tracking tokens: {e}")
+        
         data = json.loads(response.choices[0].message.content)
         variants = data.get("variants") or data.get("ideas") or []
         # Normaliser un minimum
@@ -666,6 +684,25 @@ Génère l'article maintenant."""
             temperature=0.8,
             max_tokens=4000,
         )
+        
+        # Tracker les tokens
+        if hasattr(response, 'usage') and response.usage:
+            try:
+                from utils.token_tracker import track_openai_usage
+                variant_title = variant.get("title", "")
+                track_openai_usage(
+                    operation="generate_article",
+                    model="gpt-4o-mini",
+                    usage={
+                        "prompt_tokens": response.usage.prompt_tokens,
+                        "completion_tokens": response.usage.completion_tokens,
+                        "total_tokens": response.usage.total_tokens
+                    },
+                    article_title=variant_title
+                )
+            except Exception as e:
+                print(f"⚠️  Erreur tracking tokens: {e}")
+        
         article = response.choices[0].message.content
         print("✅ Article complet généré")
         return article
@@ -771,6 +808,24 @@ Convert Markdown to HTML:
             response_format={"type": "json_object"},
             temperature=0.7
         )
+        
+        # Tracker les tokens
+        if hasattr(response, 'usage') and response.usage:
+            try:
+                from utils.token_tracker import track_openai_usage
+                track_openai_usage(
+                    operation="optimize_seo",
+                    model="gpt-4o-mini",
+                    usage={
+                        "prompt_tokens": response.usage.prompt_tokens,
+                        "completion_tokens": response.usage.completion_tokens,
+                        "total_tokens": response.usage.total_tokens
+                    },
+                    article_title=result.get("title", "") if 'result' in locals() else None
+                )
+            except Exception as e:
+                print(f"⚠️  Erreur tracking tokens: {e}")
+        
         result = json.loads(response.choices[0].message.content)
         
         # Nettoyer les titres pour enlever les caractères problématiques
@@ -1095,6 +1150,23 @@ Return the translated article in the same format (Markdown with headings, paragr
             max_tokens=4000
         )
         
+        # Tracker les tokens
+        if hasattr(response, 'usage') and response.usage:
+            try:
+                from utils.token_tracker import track_openai_usage
+                track_openai_usage(
+                    operation="translate_article",
+                    model="gpt-4o-mini",
+                    usage={
+                        "prompt_tokens": response.usage.prompt_tokens,
+                        "completion_tokens": response.usage.completion_tokens,
+                        "total_tokens": response.usage.total_tokens
+                    },
+                    article_title=article_data.get("title", "")
+                )
+            except Exception as e:
+                print(f"⚠️  Erreur tracking tokens: {e}")
+        
         english_content = response.choices[0].message.content
         
         # Extraire le titre depuis le contenu markdown si l'IA ne le fournit pas correctement
@@ -1120,6 +1192,23 @@ Return the translated article in the same format (Markdown with headings, paragr
             response_format={"type": "json_object"},
             temperature=0.7
         )
+        
+        # Tracker les tokens
+        if hasattr(seo_response, 'usage') and seo_response.usage:
+            try:
+                from utils.token_tracker import track_openai_usage
+                track_openai_usage(
+                    operation="optimize_seo",
+                    model="gpt-4o-mini",
+                    usage={
+                        "prompt_tokens": seo_response.usage.prompt_tokens,
+                        "completion_tokens": seo_response.usage.completion_tokens,
+                        "total_tokens": seo_response.usage.total_tokens
+                    },
+                    article_title=article_data.get("title", "")
+                )
+            except Exception as e:
+                print(f"⚠️  Erreur tracking tokens: {e}")
         
         english_seo = json.loads(seo_response.choices[0].message.content)
         
