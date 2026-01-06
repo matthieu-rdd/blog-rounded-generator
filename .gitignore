@@ -1,0 +1,35 @@
+# Variables d'environnement
+.env
+.env.local
+
+# Articles générés
+articles/*.md
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Credentials
+*.json
+!package.json
+!package-lock.json
+!data/*.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+

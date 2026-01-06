@@ -1,0 +1,3 @@
+# Fichier pour Streamlit Cloud - packages système si nécessaire
+# Laisser vide si pas de packages système requis
+
