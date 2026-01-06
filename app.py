@@ -56,11 +56,43 @@ except Exception as e:
 # CSS personnalisé
 st.markdown("""
 <style>
+    /* Réduire les espaces en haut de la page principale */
+    .main .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    /* Réduire l'espace de la sidebar */
+    [data-testid="stSidebar"] {
+        padding-top: 0.5rem;
+    }
+    
+    /* Réduire l'espace du header */
+    header[data-testid="stHeader"] {
+        display: none;
+    }
+    
+    /* Réduire l'espace du footer */
+    footer {
+        display: none;
+    }
+    
+    /* Réduire les marges des éléments dans la sidebar */
+    [data-testid="stSidebar"] > div {
+        padding-top: 0.5rem;
+    }
+    
+    /* Réduire l'espace entre les sections */
+    [data-testid="stSidebar"] hr {
+        margin: 0.5rem 0;
+    }
+    
     .main-header {
         font-size: 2.5rem;
         font-weight: bold;
         color: #1f77b4;
         margin-bottom: 1rem;
+        margin-top: 0;
     }
     .variant-card {
         border: 2px solid #e0e0e0;
@@ -118,9 +150,9 @@ if 'edit_mode' not in st.session_state:
 
 # Sidebar avec informations
 with st.sidebar:
-    st.markdown("## Rounded")
+    st.markdown("### Rounded")
     st.markdown("---")
-    st.title("Navigation")
+    st.markdown("#### Navigation")
     st.markdown("---")
     
     # Navigation entre pages
@@ -166,12 +198,38 @@ with st.sidebar:
 if not st.session_state.get('authenticated', False):
     st.markdown("""
     <style>
+        /* Cacher la sidebar sur la page de login */
+        [data-testid="stSidebar"] {
+            display: none;
+        }
+        
+        /* Centrer le contenu de login */
+        .main .block-container {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            max-width: 100% !important;
+        }
+        
+        /* Centrer verticalement et horizontalement */
+        .main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0;
+        }
+        
         .login-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 80vh;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
+        
         .login-box {
             background: white;
             padding: 40px;
@@ -179,13 +237,36 @@ if not st.session_state.get('authenticated', False):
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             max-width: 400px;
             width: 100%;
+            margin: 0 auto;
+            text-align: center;
         }
+        
         .login-title {
             text-align: center;
             font-size: 2rem;
             margin-bottom: 30px;
             color: #1f77b4;
             font-weight: bold;
+        }
+        
+        /* Centrer les éléments Streamlit dans le login-box */
+        .login-box .stTextInput > div > div {
+            margin: 0 auto;
+        }
+        
+        .login-box .stTextInput label {
+            text-align: center;
+            display: block;
+            width: 100%;
+        }
+        
+        .login-box .stButton {
+            margin: 0 auto;
+        }
+        
+        /* Centrer les colonnes */
+        .login-box [data-testid="column"] {
+            text-align: center;
         }
     </style>
     <div class="login-wrapper">
@@ -194,18 +275,21 @@ if not st.session_state.get('authenticated', False):
     
     st.markdown('<div class="login-title">Assistant Rédaction Blog Rounded</div>', unsafe_allow_html=True)
     
+    # Centrer le champ de mot de passe
+    st.markdown('<div style="text-align: center; margin: 20px 0;">', unsafe_allow_html=True)
     password = st.text_input("Mot de passe", type="password", placeholder="Entrez votre mot de passe")
+    st.markdown('</div>', unsafe_allow_html=True)
     
-    col1, col2 = st.columns([1, 1])
-    with col1:
+    # Centrer les boutons avec une colonne au milieu
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
         if st.button("Se connecter", type="primary", use_container_width=True):
             if password == "Rounded18!":
                 st.session_state.authenticated = True
                 st.rerun()
             else:
                 st.error("Mot de passe incorrect")
-    
-    with col2:
+        
         if st.button("Annuler", use_container_width=True):
             st.stop()
     
