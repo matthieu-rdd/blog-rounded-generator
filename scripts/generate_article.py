@@ -1046,6 +1046,16 @@ RAPPORT DE SCORING & RECOMMANDATIONS :
 ---
 
 Maintenant, réécris l'article COMPLET en appliquant les recommandations.
+
+STRUCTURE FINALE OBLIGATOIRE :
+1. Introduction
+2. Sections H2 principales (contenu de l'article)
+3. FAQ (si recommandée dans le scoring) → PLACER ICI, juste avant la conclusion, JAMAIS en plein milieu
+4. Conclusion
+
+IMPORTANT : Si tu ajoutes une FAQ, elle DOIT être placée à la fin de l'article, juste avant la conclusion. 
+NE PLACE JAMAIS la FAQ en plein milieu du contenu - cela casse la structure et n'est pas professionnel.
+
 Retourne UNIQUEMENT l'article réécrit en Markdown, sans commentaire autour.
 """
 
