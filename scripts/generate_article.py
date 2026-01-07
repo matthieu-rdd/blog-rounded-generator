@@ -840,21 +840,35 @@ def score_article_quality(article: str, topic: str, target_keywords: Optional[Li
 
     keywords_str = ", ".join(target_keywords or []) if target_keywords else ""
 
+    # Calculs automatiques pour aider le scoring
+    word_count = len(article.split())
+    has_faq = "FAQ" in article or "faq" in article.lower() or "questions fréquentes" in article.lower()
+    has_cta = "découvrir" in article.lower() or "essayer" in article.lower() or "contact" in article.lower() or "appel" in article.lower()
+    h2_count = len(re.findall(r'^##\s+', article, re.MULTILINE))
+    h3_count = len(re.findall(r'^###\s+', article, re.MULTILINE))
+    
+    # Compter les mots-clés
+    keyword_matches = 0
+    if target_keywords:
+        article_lower = article.lower()
+        for kw in target_keywords:
+            keyword_matches += article_lower.count(kw.lower())
+    
+    # Estimer la longueur moyenne des phrases
+    sentences = re.split(r'[.!?]+\s+', article)
+    avg_sentence_length = sum(len(s.split()) for s in sentences) / len(sentences) if sentences else 0
+    
     scoring_system_prompt = """
 Tu es un expert en évaluation de contenu éditorial et SEO pour des articles de blog B2B.
 
-Ta mission : analyser CHAQUE article de manière INDIVIDUELLE et donner un scoring UNIQUE 
-basé sur les caractéristiques RÉELLES de cet article spécifique.
+Ta mission : analyser CHAQUE article de manière OBJECTIVE et donner un scoring PRÉCIS 
+basé sur des critères MESURABLES et le contenu réel de l'article.
 
-IMPORTANT : 
-- Chaque article doit avoir un scoring DIFFÉRENT selon son contenu réel
-- Analyse en profondeur : longueur, structure, qualité des arguments, présence de chiffres, 
-  anecdotes, transitions, CTA, FAQ, etc.
-- Sois STRICT et VARIÉ dans tes scores : ne donne pas toujours les mêmes notes
-- Un article avec beaucoup de chiffres et d'exemples concrets aura un meilleur score contenu
-- Un article avec une FAQ et plusieurs CTA aura un meilleur score conversion
-- Un article avec des phrases courtes et bien structurées aura un meilleur score lisibilité
-- Adapte tes scores à la RÉALITÉ de l'article, pas à un standard générique
+RÈGLES DE SCORING STRICTES :
+- Sois OBJECTIF et PRÉCIS dans tes scores
+- Utilise les métriques fournies comme base, mais analyse aussi la QUALITÉ du contenu
+- Chaque dimension a des critères clairs (voir ci-dessous)
+- Les scores doivent refléter la RÉALITÉ de l'article, pas des standards génériques
 """
 
     article_title_context = f"\n- Titre de l'article : {article_title}" if article_title else ""
@@ -864,40 +878,69 @@ CONTEXTE :
 - Sujet de l'article : {topic}
 - Mots-clés ciblés : {keywords_str if keywords_str else "non précisés"}{article_title_context}
 
-ARTICLE À ÉVALUER (analyse-le en profondeur, caractère par caractère) :
+MÉTRIQUES AUTOMATIQUES CALCULÉES :
+- Nombre de mots : {word_count}
+- Présence FAQ : {"OUI" if has_faq else "NON"}
+- Présence CTA : {"OUI" if has_cta else "NON"}
+- Nombre de H2 : {h2_count}
+- Nombre de H3 : {h3_count}
+- Occurrences mots-clés : {keyword_matches}
+- Longueur moyenne phrases : {avg_sentence_length:.1f} mots
+
+ARTICLE À ÉVALUER :
 ---
 {article}
 ---
 
-INSTRUCTIONS D'ÉVALUATION :
+INSTRUCTIONS D'ÉVALUATION STRICTES :
 
-1. ANALYSE APPROFONDIE :
-   - Compte réellement les mots, phrases, paragraphes
-   - Identifie les chiffres, statistiques, exemples concrets
-   - Repère les CTA, FAQ, transitions, anecdotes
-   - Évalue la structure H2/H3, listes, formatage
-   - Mesure la longueur réelle des phrases
-   - Vérifie la présence et répétition des mots-clés
+1. QUALITÉ DU CONTENU (0-20) :
+   - 0-5 : Article très court (< 600 mots) ou contenu superficiel
+   - 6-10 : Article court (600-900 mots) ou peu d'exemples
+   - 11-15 : Article correct (900-1200 mots) avec quelques exemples/chiffres
+   - 16-18 : Article bon (1200-1500 mots) avec exemples concrets et chiffres
+   - 19-20 : Article excellent (1500+ mots) avec beaucoup d'exemples, chiffres, études
+   → Score basé sur : longueur, profondeur, exemples concrets, chiffres, arguments solides
 
-2. SCORING PERSONNALISÉ (sur 100 pour le global, sur 20 pour chaque dimension) :
-   - Score global : basé sur la moyenne pondérée des dimensions
-   - Qualité du contenu (0-20) : arguments solides, exemples concrets, chiffres, profondeur
-   - Lisibilité & clarté (0-20) : phrases courtes, structure claire, vocabulaire adapté
-   - SEO (0-30) : mots-clés présents, répétition stratégique, structure H2/H3, méta
-   - Conversion & marketing (0-20) : CTA présents, FAQ, appels à l'action, bénéfices clairs
-   - Crédibilité secteur santé (0-10) : ton respectueux, pas de promesses irréalistes
+2. LISIBILITÉ & CLARTÉ (0-20) :
+   - 0-5 : Phrases très longues (> 25 mots en moyenne), structure confuse
+   - 6-10 : Phrases longues (20-25 mots), structure acceptable
+   - 11-15 : Phrases moyennes (15-20 mots), structure claire
+   - 16-18 : Phrases courtes (12-15 mots), structure très claire
+   - 19-20 : Phrases courtes (< 12 mots), structure parfaite, vocabulaire adapté
+   → Score basé sur : longueur des phrases, structure H2/H3, clarté, vocabulaire
 
-3. VARIATION DES SCORES :
-   - Si l'article est court (< 800 mots) : pénalise le score contenu
-   - Si l'article n'a pas de FAQ : pénalise le score conversion
-   - Si les phrases sont très longues (> 30 mots) : pénalise la lisibilité
-   - Si les mots-clés sont absents : pénalise fortement le SEO
-   - Si l'article a beaucoup de chiffres et d'exemples : bon score contenu
-   - ADAPTE les scores à la RÉALITÉ de cet article spécifique
+3. SEO (0-30) :
+   - 0-10 : Mots-clés absents ou très peu présents, pas de structure H2/H3
+   - 11-15 : Mots-clés présents mais peu répétés, structure basique
+   - 16-20 : Mots-clés bien présents, structure H2/H3 correcte
+   - 21-25 : Mots-clés répétés stratégiquement, bonne structure, méta optimisée
+   - 26-30 : Mots-clés parfaitement intégrés, structure excellente, SEO optimal
+   → Score basé sur : présence/répétition mots-clés, structure H2/H3, optimisation SEO
 
-4. RAPPORT DÉTAILLÉ :
+4. CONVERSION & MARKETING (0-20) :
+   - 0-5 : Aucun CTA, pas de FAQ, pas d'appel à l'action
+   - 6-10 : CTA faible ou absent, pas de FAQ
+   - 11-15 : CTA présent mais peu visible, pas de FAQ
+   - 16-18 : CTA clair, FAQ présente, appels à l'action visibles
+   - 19-20 : CTA multiples et stratégiques, FAQ complète, conversion optimale
+   → Score basé sur : CTA, FAQ, appels à l'action, bénéfices clairs
+
+5. CRÉDIBILITÉ SECTEUR SANTÉ (0-10) :
+   - 0-3 : Ton inadapté, promesses irréalistes
+   - 4-6 : Ton correct mais peut être amélioré
+   - 7-8 : Ton respectueux, réaliste
+   - 9-10 : Ton parfait, très respectueux, crédible, adapté au secteur santé
+   → Score basé sur : ton, réalisme, crédibilité, adéquation secteur
+
+6. SCORE GLOBAL (0-100) :
+   Calcul : (content_score × 0.25) + (readability_score × 0.20) + (seo_score × 0.30) + (conversion_score × 0.20) + (credibility_score × 0.05)
+   Arrondir à l'entier le plus proche.
+
+7. RAPPORT DÉTAILLÉ :
    - Commence par le score global avec un commentaire personnalisé
    - Détaille chaque dimension avec des exemples CONCRETS tirés de l'article
+   - Utilise les métriques fournies dans ton analyse
    - Liste les points forts RÉELS de cet article
    - Liste les points faibles RÉELS de cet article
    - Propose 5 actions PRIORITAIRES pour améliorer CET article spécifique
@@ -912,12 +955,12 @@ FORMAT DU RAPPORT :
 
 IMPORTANT - FORMAT JSON STRICT :
 {{
-  "global_score": <score entre 50 et 95, VARIÉ selon l'article>,
-  "content_score": <score entre 10 et 20>,
-  "readability_score": <score entre 10 et 20>,
-  "seo_score": <score entre 15 et 30>,
-  "conversion_score": <score entre 8 et 20>,
-  "credibility_score": <score entre 8 et 10>,
+  "global_score": <score entre 50 et 95, calculé selon la formule>,
+  "content_score": <score entre 0 et 20, basé sur les critères ci-dessus>,
+  "readability_score": <score entre 0 et 20, basé sur les critères ci-dessus>,
+  "seo_score": <score entre 0 et 30, basé sur les critères ci-dessus>,
+  "conversion_score": <score entre 0 et 20, basé sur les critères ci-dessus>,
+  "credibility_score": <score entre 0 et 10, basé sur les critères ci-dessus>,
   "markdown_report": "<rapport complet en Markdown, très détaillé et personnalisé pour CET article>"
 }}
 
@@ -932,19 +975,49 @@ Ne renvoie QUE le JSON, sans texte autour.
                 {"role": "user", "content": scoring_user_prompt},
             ],
             response_format={"type": "json_object"},
-            temperature=0.4,
-            max_tokens=2000,
+            temperature=0.2,  # Plus bas pour plus de cohérence dans le scoring
+            max_tokens=2500,  # Plus de tokens pour un rapport plus détaillé
         )
 
         data = json.loads(response.choices[0].message.content)
 
+        # Validation et normalisation des scores
+        def validate_score(score, min_val, max_val, default=None):
+            if score is None:
+                return default
+            try:
+                score = int(score)
+                return max(min_val, min(max_val, score))
+            except (ValueError, TypeError):
+                return default
+
+        content_score = validate_score(data.get("content_score"), 0, 20, 15)
+        readability_score = validate_score(data.get("readability_score"), 0, 20, 15)
+        seo_score = validate_score(data.get("seo_score"), 0, 30, 20)
+        conversion_score = validate_score(data.get("conversion_score"), 0, 20, 12)
+        credibility_score = validate_score(data.get("credibility_score"), 0, 10, 9)
+        
+        # Recalculer le score global si nécessaire
+        global_score = data.get("global_score")
+        if global_score is None:
+            # Calculer selon la formule pondérée
+            global_score = int(
+                (content_score * 0.25) +
+                (readability_score * 0.20) +
+                (seo_score * 0.30) +
+                (conversion_score * 0.20) +
+                (credibility_score * 0.05)
+            )
+        else:
+            global_score = validate_score(global_score, 0, 100, 75)
+
         result = {
-            "global_score": data.get("global_score"),
-            "content_score": data.get("content_score"),
-            "readability_score": data.get("readability_score"),
-            "seo_score": data.get("seo_score"),
-            "conversion_score": data.get("conversion_score"),
-            "credibility_score": data.get("credibility_score"),
+            "global_score": global_score,
+            "content_score": content_score,
+            "readability_score": readability_score,
+            "seo_score": seo_score,
+            "conversion_score": conversion_score,
+            "credibility_score": credibility_score,
             "markdown": data.get("markdown_report", ""),
         }
 
