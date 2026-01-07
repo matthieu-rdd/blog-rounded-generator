@@ -16,7 +16,7 @@ import random
 import string
 import re
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 from dotenv import load_dotenv
 from pathlib import Path
 import sys
@@ -712,10 +712,374 @@ Génère l'article maintenant."""
 
 
 def apply_style_refinement(article: str) -> str:
-    """Applique un raffinement du style si nécessaire"""
-    # Pour l'instant, on garde l'article tel quel
-    # On pourrait ajouter une passe de style ici si nécessaire
-    return article
+    """
+    Applique un raffinement de style à l'article généré.
+
+    Objectif :
+    - Donner du "grain" au texte
+    - Rendre la lecture plus rythmée et concrète
+    """
+    if not openai_client:
+        # Si pas de client OpenAI, on renvoie l'article tel quel
+        return article
+
+    style_prompt = """
+Tu es un rédacteur senior B2B français, ton de marque Rounded : expert, direct, un peu mordant mais jamais vulgaire.
+
+Tu reçois ci-dessous un article déjà structuré (H2/H3, paragraphes, listes). 
+Ta mission : RÉÉCRIRE l’article COMPLET en respectant ces règles :
+
+1) Structure des phrases
+- Varie la ponctuation : points, virgules, deux-points, points-virgules, parenthèses (avec modération).
+- Évite les phrases trop longues : idéalement 12–22 mots, rarement plus de 30.
+- Commence autant que possible chaque phrase par l’idée clé (thèse), puis 
+  seulement ensuite l’explication, puis un exemple, un chiffre ou une mini-citation.
+
+2) Ton & voix
+- Garde un ton professionnel, clair, orienté business.
+- Autorisé : un peu de sarcasme / ironie légère pour pointer les absurdités du réel 
+  (par ex. “évidemment, personne n’a jamais eu un appel perdu un lundi matin…”).
+- 1 à 3 blagues maxi sur tout l’article, subtiles, jamais lourdes, jamais sur les patients.
+
+3) Progression & transitions
+- Ajoute UNE courte phrase de transition entre chaque H2 pour faire le lien logique
+  (ex : “Avant de parler coûts, regardons d’abord ce qui coince au quotidien.”).
+- Les transitions doivent être naturelles et orienter la suite de la lecture.
+
+4) Anecdotes & concret
+- Quand c’est pertinent, ajoute de petites anecdotes réalistes (2–3 phrases) :
+  - situations de secrétariat médical
+  - appels ratés, débordement, patients frustrés, médecins débordés, etc.
+- Ces anecdotes doivent rester crédibles, pas romancées.
+
+5) Sources & chiffres clés
+- Si l’article contient déjà des chiffres, études, pourcentages : 
+  - mets-les davantage en valeur (formulations percutantes, “En clair…”, “Concrètement…”).
+- Si tu vois passer des noms d’études, organismes, sources : 
+  - reformule en une phrase qui donne du contexte (“Une étude de [organisme] montre que…”).
+- NE PAS inventer de chiffres qui ne sont pas déjà présents dans le texte.
+
+6) Mise en forme
+- Garde STRICTEMENT la structure H2/H3 / listes.
+- Ne change pas le sens business général ni les messages clés.
+- Ne rajoute PAS de nouveaux liens vers Donna ou Rounded au-delà de ce qui est prévu
+  dans la version originale.
+
+Retourne UNIQUEMENT l’article réécrit, au format Markdown, sans commentaire autour.
+"""
+
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": style_prompt},
+                {
+                    "role": "user",
+                    "content": (
+                        "Voici l'article à réécrire en appliquant STRICTEMENT les règles ci-dessus :\n\n"
+                        f"{article}"
+                    ),
+                },
+            ],
+            temperature=0.8,
+            max_tokens=4000,
+        )
+
+        styled_article = response.choices[0].message.content
+
+        # Tracking tokens pour la passe de style
+        if hasattr(response, "usage") and response.usage:
+            try:
+                from utils.token_tracker import track_openai_usage
+
+                track_openai_usage(
+                    operation="style_refinement",
+                    model="gpt-4o-mini",
+                    usage={
+                        "prompt_tokens": response.usage.prompt_tokens,
+                        "completion_tokens": response.usage.completion_tokens,
+                        "total_tokens": response.usage.total_tokens,
+                    },
+                )
+            except Exception as e:
+                print(f"⚠️  Erreur tracking tokens (style_refinement): {e}")
+
+        return styled_article or article
+
+    except Exception as e:
+        print(f"⚠️  Erreur apply_style_refinement: {e}")
+        # En cas de problème, on ne bloque pas : on garde l'article brut
+        return article
+
+
+def score_article_quality(article: str, topic: str, target_keywords: Optional[List[str]] = None, article_title: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Évalue l'article et retourne un rapport de scoring (éditorial + SEO) au format structuré.
+
+    Retour :
+    {
+        "global_score": int | None,
+        "content_score": int | None,
+        "readability_score": int | None,
+        "seo_score": int | None,
+        "conversion_score": int | None,
+        "credibility_score": int | None,
+        "markdown": str  # rapport complet en Markdown (style exemple utilisateur)
+    }
+    """
+    if not openai_client:
+        return {
+            "global_score": None,
+            "content_score": None,
+            "readability_score": None,
+            "seo_score": None,
+            "conversion_score": None,
+            "credibility_score": None,
+            "markdown": "",
+        }
+
+    keywords_str = ", ".join(target_keywords or []) if target_keywords else ""
+
+    scoring_system_prompt = """
+Tu es un expert en évaluation de contenu éditorial et SEO pour des articles de blog B2B.
+
+Ta mission : analyser CHAQUE article de manière INDIVIDUELLE et donner un scoring UNIQUE 
+basé sur les caractéristiques RÉELLES de cet article spécifique.
+
+IMPORTANT : 
+- Chaque article doit avoir un scoring DIFFÉRENT selon son contenu réel
+- Analyse en profondeur : longueur, structure, qualité des arguments, présence de chiffres, 
+  anecdotes, transitions, CTA, FAQ, etc.
+- Sois STRICT et VARIÉ dans tes scores : ne donne pas toujours les mêmes notes
+- Un article avec beaucoup de chiffres et d'exemples concrets aura un meilleur score contenu
+- Un article avec une FAQ et plusieurs CTA aura un meilleur score conversion
+- Un article avec des phrases courtes et bien structurées aura un meilleur score lisibilité
+- Adapte tes scores à la RÉALITÉ de l'article, pas à un standard générique
+"""
+
+    article_title_context = f"\n- Titre de l'article : {article_title}" if article_title else ""
+    
+    scoring_user_prompt = f"""
+CONTEXTE :
+- Sujet de l'article : {topic}
+- Mots-clés ciblés : {keywords_str if keywords_str else "non précisés"}{article_title_context}
+
+ARTICLE À ÉVALUER (analyse-le en profondeur, caractère par caractère) :
+---
+{article}
+---
+
+INSTRUCTIONS D'ÉVALUATION :
+
+1. ANALYSE APPROFONDIE :
+   - Compte réellement les mots, phrases, paragraphes
+   - Identifie les chiffres, statistiques, exemples concrets
+   - Repère les CTA, FAQ, transitions, anecdotes
+   - Évalue la structure H2/H3, listes, formatage
+   - Mesure la longueur réelle des phrases
+   - Vérifie la présence et répétition des mots-clés
+
+2. SCORING PERSONNALISÉ (sur 100 pour le global, sur 20 pour chaque dimension) :
+   - Score global : basé sur la moyenne pondérée des dimensions
+   - Qualité du contenu (0-20) : arguments solides, exemples concrets, chiffres, profondeur
+   - Lisibilité & clarté (0-20) : phrases courtes, structure claire, vocabulaire adapté
+   - SEO (0-30) : mots-clés présents, répétition stratégique, structure H2/H3, méta
+   - Conversion & marketing (0-20) : CTA présents, FAQ, appels à l'action, bénéfices clairs
+   - Crédibilité secteur santé (0-10) : ton respectueux, pas de promesses irréalistes
+
+3. VARIATION DES SCORES :
+   - Si l'article est court (< 800 mots) : pénalise le score contenu
+   - Si l'article n'a pas de FAQ : pénalise le score conversion
+   - Si les phrases sont très longues (> 30 mots) : pénalise la lisibilité
+   - Si les mots-clés sont absents : pénalise fortement le SEO
+   - Si l'article a beaucoup de chiffres et d'exemples : bon score contenu
+   - ADAPTE les scores à la RÉALITÉ de cet article spécifique
+
+4. RAPPORT DÉTAILLÉ :
+   - Commence par le score global avec un commentaire personnalisé
+   - Détaille chaque dimension avec des exemples CONCRETS tirés de l'article
+   - Liste les points forts RÉELS de cet article
+   - Liste les points faibles RÉELS de cet article
+   - Propose 5 actions PRIORITAIRES pour améliorer CET article spécifique
+   - Inclus un tableau "Score par type d'outil simulé" (SEO Review Tools, Hemingway, etc.)
+
+FORMAT DU RAPPORT :
+- Style professionnel avec emojis (📊, ✍️, 📖, 🔍, 🎯, 🏥)
+- Titres clairs : "Score global", "Détail du scoring", "5 actions pour passer à 90+"
+- Tableaux pour les scores par outil
+- Listes à puces pour les recommandations
+- En français, ton expert mais accessible
+
+IMPORTANT - FORMAT JSON STRICT :
+{{
+  "global_score": <score entre 50 et 95, VARIÉ selon l'article>,
+  "content_score": <score entre 10 et 20>,
+  "readability_score": <score entre 10 et 20>,
+  "seo_score": <score entre 15 et 30>,
+  "conversion_score": <score entre 8 et 20>,
+  "credibility_score": <score entre 8 et 10>,
+  "markdown_report": "<rapport complet en Markdown, très détaillé et personnalisé pour CET article>"
+}}
+
+Ne renvoie QUE le JSON, sans texte autour.
+"""
+
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": scoring_system_prompt},
+                {"role": "user", "content": scoring_user_prompt},
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.4,
+            max_tokens=2000,
+        )
+
+        data = json.loads(response.choices[0].message.content)
+
+        result = {
+            "global_score": data.get("global_score"),
+            "content_score": data.get("content_score"),
+            "readability_score": data.get("readability_score"),
+            "seo_score": data.get("seo_score"),
+            "conversion_score": data.get("conversion_score"),
+            "credibility_score": data.get("credibility_score"),
+            "markdown": data.get("markdown_report", ""),
+        }
+
+        # Tracking tokens
+        if hasattr(response, "usage") and response.usage:
+            try:
+                from utils.token_tracker import track_openai_usage
+
+                track_openai_usage(
+                    operation="score_article",
+                    model="gpt-4o-mini",
+                    usage={
+                        "prompt_tokens": response.usage.prompt_tokens,
+                        "completion_tokens": response.usage.completion_tokens,
+                        "total_tokens": response.usage.total_tokens,
+                    },
+                    topic=topic,
+                )
+            except Exception as e:
+                print(f"⚠️  Erreur tracking tokens (score_article): {e}")
+
+        return result
+
+    except Exception as e:
+        print(f"⚠️  Erreur score_article_quality: {e}")
+        return {
+            "global_score": None,
+            "content_score": None,
+            "readability_score": None,
+            "seo_score": None,
+            "conversion_score": None,
+            "credibility_score": None,
+            "markdown": "",
+        }
+
+
+def regenerate_article_with_scoring(
+    article: str,
+    scoring_markdown: str,
+    topic: str,
+    target_keywords: Optional[List[str]] = None,
+) -> str:
+    """
+    Régénère l'article en s'appuyant sur le scoring et les recommandations.
+
+    - Objectif : passer d'un bon article à un article optimisé (90+ / 100).
+    - Ne doit PAS changer le message de fond, mais améliorer :
+      structure, SEO, conversion, clarté, impact.
+    """
+    if not openai_client:
+        return article
+
+    keywords_str = ", ".join(target_keywords or []) if target_keywords else ""
+
+    system_prompt = """
+Tu es un expert en copywriting B2B et SEO pour le secteur médical, travaillant pour Rounded.
+
+Tu reçois :
+- UN ARTICLE INITIAL
+- UN RAPPORT DE SCORING DÉTAILLÉ avec des recommandations
+
+Ta mission :
+- Réécrire l'ARTICLE en appliquant au maximum les recommandations du rapport,
+  pour le faire passer au plus près de 90+ / 100.
+
+Contraintes :
+- Garde le même angle, la même cible et les mêmes messages business.
+- Garde la structure générale (H2/H3, listes) mais tu peux :
+  - ajouter une FAQ,
+  - renforcer les CTA,
+  - clarifier certains passages,
+  - raccourcir les phrases trop longues.
+- N'invente PAS de nouveaux chiffres précis si aucun chiffre n'était présent.
+- Ne rajoute PAS de nouveaux liens externes non mentionnés dans l'article initial,
+  sauf si ce sont des ancres génériques sans URL (ex : \"FAQ IA et secrétariat médical\").
+
+Format attendu :
+- Retourne UNIQUEMENT l'article réécrit, en Markdown propre.
+"""
+
+    user_prompt = f"""
+Contexte :
+- Sujet : {topic}
+- Mots-clés cibles indicatifs : {keywords_str}
+
+ARTICLE INITIAL :
+---
+{article}
+---
+
+RAPPORT DE SCORING & RECOMMANDATIONS :
+---
+{scoring_markdown}
+---
+
+Maintenant, réécris l'article COMPLET en appliquant les recommandations.
+Retourne UNIQUEMENT l'article réécrit en Markdown, sans commentaire autour.
+"""
+
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.7,
+            max_tokens=4000,
+        )
+
+        improved_article = response.choices[0].message.content
+
+        # Tracking tokens
+        if hasattr(response, "usage") and response.usage:
+            try:
+                from utils.token_tracker import track_openai_usage
+
+                track_openai_usage(
+                    operation="regenerate_with_scoring",
+                    model="gpt-4o-mini",
+                    usage={
+                        "prompt_tokens": response.usage.prompt_tokens,
+                        "completion_tokens": response.usage.completion_tokens,
+                        "total_tokens": response.usage.total_tokens,
+                    },
+                    topic=topic,
+                )
+            except Exception as e:
+                print(f"⚠️  Erreur tracking tokens (regenerate_with_scoring): {e}")
+
+        return improved_article or article
+
+    except Exception as e:
+        print(f"⚠️  Erreur regenerate_article_with_scoring: {e}")
+        return article
 
 
 def load_target_keywords() -> List[str]:
@@ -743,6 +1107,61 @@ def load_target_keywords() -> List[str]:
     except Exception as e:
         print(f"⚠️  Erreur chargement des mots-clés (data/keywords.json): {e}")
         return []
+
+
+def select_target_keywords(topic: str, all_keywords: List[str], min_k: int = 2, max_k: int = 4) -> List[str]:
+    """
+    Sélectionne entre 2 et 4 mots-clés pertinents en fonction du sujet.
+
+    Logique simple :
+    - On score chaque mot-clé selon son recouvrement avec les mots du sujet
+    - On prend les meilleurs scores en priorité
+    - On garantit au moins min_k mots-clés (en complétant si besoin)
+    """
+    if not topic or not all_keywords:
+        return all_keywords[:max_k]
+
+    topic_lower = topic.lower()
+    # Découper le sujet en mots significatifs
+    topic_words = re.findall(r"[a-zàâäéèêëîïôöùûüç0-9]+", topic_lower)
+    topic_words_set = set(topic_words)
+
+    scored: List[Tuple[int, str]] = []
+    for kw in all_keywords:
+        kw_lower = kw.lower()
+        kw_words = re.findall(r"[a-zàâäéèêëîïôöùûüç0-9]+", kw_lower)
+        kw_words_set = set(kw_words)
+
+        # Score = nombre de mots en commun + bonus si le mot-clé est un substring du sujet
+        common_words = topic_words_set.intersection(kw_words_set)
+        score = len(common_words)
+        if kw_lower in topic_lower or any(w in topic_lower for w in kw_words_set):
+            score += 1
+
+        scored.append((score, kw))
+
+    # Trier par score décroissant
+    scored.sort(key=lambda x: x[0], reverse=True)
+
+    # Garder uniquement les mots-clés avec un score > 0 en priorité
+    positive = [kw for score, kw in scored if score > 0]
+
+    selected: List[str] = []
+    for kw in positive:
+        if kw not in selected:
+            selected.append(kw)
+        if len(selected) >= max_k:
+            break
+
+    # Si on n'a pas assez de mots-clés, compléter avec les autres (sans doublon)
+    if len(selected) < min_k:
+        for _score, kw in scored:
+            if kw not in selected:
+                selected.append(kw)
+            if len(selected) >= min_k:
+                break
+
+    return selected[:max_k]
 
 
 def optimize_seo(article: str, target_keywords: Optional[List[str]] = None) -> Dict[str, Any]:
