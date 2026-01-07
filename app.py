@@ -576,6 +576,198 @@ if st.session_state.get('page') == 'tokens':
     
     st.stop()
 
+# --- PAGE GESTION MOTS-CLÉS SEO ---
+if st.session_state.get('page') == 'keywords':
+    st.header("🎯 Gestion des Mots-clés SEO")
+    
+    try:
+        from utils.keywords_manager import (
+            get_all_keywords_with_stats,
+            add_keyword,
+            update_keyword,
+            delete_keyword,
+            calculate_blogs_needed
+        )
+        
+        # Section ajout de mot-clé
+        with st.expander("➕ Ajouter un nouveau mot-clé", expanded=False):
+            col1, col2, col3 = st.columns([2, 1, 1])
+            
+            with col1:
+                new_keyword = st.text_input("Mot-clé", placeholder="ex: agent vocal IA", key="new_keyword_input")
+            
+            with col2:
+                new_volume = st.number_input("Volume de recherche", min_value=0, value=None, step=100, key="new_volume_input")
+            
+            with col3:
+                new_complexity = st.selectbox(
+                    "Complexité SEO",
+                    ["", "Facile", "Moyen", "Difficile"],
+                    key="new_complexity_input"
+                )
+            
+            if st.button("Ajouter", type="primary", use_container_width=True):
+                if new_keyword and new_keyword.strip():
+                    add_keyword(
+                        new_keyword.strip(),
+                        volume=int(new_volume) if new_volume else None,
+                        complexity=new_complexity if new_complexity else None
+                    )
+                    st.success(f"✅ Mot-clé '{new_keyword}' ajouté !")
+                    st.rerun()
+                else:
+                    st.error("Veuillez entrer un mot-clé")
+        
+        st.markdown("---")
+        
+        # Charger tous les mots-clés avec stats
+        keywords_data = get_all_keywords_with_stats()
+        
+        if not keywords_data:
+            st.info("Aucun mot-clé configuré. Ajoutez-en un pour commencer.")
+        else:
+            st.subheader(f"📊 Liste des mots-clés ({len(keywords_data)})")
+            
+            # Filtres
+            col1, col2 = st.columns(2)
+            with col1:
+                search_filter = st.text_input("🔍 Rechercher", placeholder="Filtrer par mot-clé...")
+            with col2:
+                complexity_filter = st.selectbox(
+                    "Filtrer par complexité",
+                    ["Tous", "Facile", "Moyen", "Difficile"]
+                )
+            
+            # Tableau des mots-clés
+            filtered_keywords = keywords_data
+            if search_filter:
+                filtered_keywords = [k for k in filtered_keywords if search_filter.lower() in k["keyword"].lower()]
+            if complexity_filter != "Tous":
+                filtered_keywords = [k for k in filtered_keywords if k.get("complexity") == complexity_filter]
+            
+            if filtered_keywords:
+                # Afficher chaque mot-clé dans un expander
+                for idx, kw_data in enumerate(filtered_keywords):
+                    keyword = kw_data["keyword"]
+                    volume = kw_data.get("volume")
+                    complexity = kw_data.get("complexity", "Non défini")
+                    blogs_needed = kw_data.get("blogs_needed")
+                    total_occurrences = kw_data["total_occurrences"]
+                    articles_count = kw_data["articles_count"]
+                    
+                    # Titre de l'expander avec stats clés
+                    expander_title = f"{keyword}"
+                    if volume:
+                        expander_title += f" | Volume: {volume:,}"
+                    if blogs_needed:
+                        expander_title += f" | Blogs: {articles_count}/{blogs_needed}"
+                    if total_occurrences > 0:
+                        expander_title += f" | {total_occurrences} occ."
+                    
+                    with st.expander(expander_title, expanded=False):
+                        col1, col2, col3, col4 = st.columns(4)
+                        
+                        with col1:
+                            st.metric("Volume recherche", f"{volume:,}" if volume else "N/A")
+                        
+                        with col2:
+                            st.metric("Complexité SEO", complexity)
+                        
+                        with col3:
+                            st.metric("Blogs créés", articles_count)
+                        
+                        with col4:
+                            blogs_needed_display = f"{blogs_needed}" if blogs_needed else "N/A"
+                            st.metric("Blogs nécessaires", blogs_needed_display)
+                        
+                        st.markdown("---")
+                        
+                        # Occurrences
+                        st.markdown(f"**Occurrences totales :** {total_occurrences}")
+                        if articles_count > 0:
+                            st.markdown(f"**Articles contenant ce mot-clé :** {articles_count}")
+                            if kw_data.get("articles"):
+                                with st.expander(f"Voir les {articles_count} article(s)", expanded=False):
+                                    for article in kw_data["articles"]:
+                                        st.markdown(f"• {article}")
+                        
+                        st.markdown("---")
+                        
+                        # Édition
+                        st.markdown("**Modifier les métadonnées :**")
+                        edit_col1, edit_col2, edit_col3 = st.columns([2, 1, 1])
+                        
+                        with edit_col1:
+                            st.text_input("Mot-clé", value=keyword, disabled=True, key=f"edit_keyword_{idx}")
+                        
+                        with edit_col2:
+                            updated_volume = st.number_input(
+                                "Volume",
+                                min_value=0,
+                                value=int(volume) if volume else None,
+                                step=100,
+                                key=f"edit_volume_{idx}"
+                            )
+                        
+                        with edit_col3:
+                            updated_complexity = st.selectbox(
+                                "Complexité",
+                                ["Facile", "Moyen", "Difficile"],
+                                index=["Facile", "Moyen", "Difficile"].index(complexity) if complexity in ["Facile", "Moyen", "Difficile"] else 1,
+                                key=f"edit_complexity_{idx}"
+                            )
+                        
+                        col_save, col_delete = st.columns([1, 1])
+                        with col_save:
+                            if st.button("💾 Sauvegarder", key=f"save_{idx}", use_container_width=True):
+                                update_keyword(
+                                    keyword,
+                                    volume=int(updated_volume) if updated_volume else None,
+                                    complexity=updated_complexity
+                                )
+                                st.success("✅ Métadonnées mises à jour !")
+                                st.rerun()
+                        
+                        with col_delete:
+                            if st.button("🗑️ Supprimer", key=f"delete_{idx}", type="secondary", use_container_width=True):
+                                delete_keyword(keyword)
+                                st.success(f"✅ Mot-clé '{keyword}' supprimé !")
+                                st.rerun()
+            
+            else:
+                st.info("Aucun mot-clé ne correspond aux filtres.")
+            
+            st.markdown("---")
+            
+            # Statistiques globales
+            st.subheader("📈 Statistiques globales")
+            total_volume = sum(k.get("volume", 0) or 0 for k in keywords_data)
+            total_blogs_created = sum(k["articles_count"] for k in keywords_data)
+            total_blogs_needed = sum(k.get("blogs_needed", 0) or 0 for k in keywords_data if k.get("blogs_needed"))
+            total_occurrences = sum(k["total_occurrences"] for k in keywords_data)
+            
+            stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
+            with stat_col1:
+                st.metric("Total mots-clés", len(keywords_data))
+            with stat_col2:
+                st.metric("Volume total", f"{total_volume:,}" if total_volume > 0 else "N/A")
+            with stat_col3:
+                st.metric("Blogs créés", total_blogs_created)
+            with stat_col4:
+                st.metric("Blogs nécessaires", f"{total_blogs_needed}" if total_blogs_needed > 0 else "N/A")
+            
+            if total_blogs_needed > 0:
+                progress = min(100, int((total_blogs_created / total_blogs_needed) * 100))
+                st.progress(progress / 100)
+                st.caption(f"Progression : {total_blogs_created} / {total_blogs_needed} blogs ({progress}%)")
+    
+    except Exception as e:
+        st.error(f"Erreur lors du chargement des mots-clés: {e}")
+        import traceback
+        st.code(traceback.format_exc())
+    
+    st.stop()
+
 # --- ÉTAPE 1 : SAISIE DU SUJET ---
 if st.session_state.step == 'input':
     st.header("Nouveau sujet d'article")
