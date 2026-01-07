@@ -1008,17 +1008,23 @@ Ta mission CRITIQUE : améliorer l'article en appliquant TOUTES les recommandati
 RÈGLES STRICTES :
 1. L'article amélioré DOIT avoir un meilleur score que l'article initial
 2. Applique TOUTES les recommandations du rapport de scoring :
-   - Si le rapport dit "ajouter une FAQ" → AJOUTE une FAQ complète
-   - Si le rapport dit "renforcer les CTA" → AJOUTE des CTA clairs et visibles
+   - Si le rapport dit "ajouter une FAQ" → AJOUTE une FAQ complète MAIS PLACE-LA À LA FIN, juste avant la conclusion
+   - Si le rapport dit "renforcer les CTA" → AJOUTE des CTA clairs et visibles (mais pas en plein milieu du contenu)
    - Si le rapport dit "raccourcir les phrases" → RACCOURCIS les phrases longues
    - Si le rapport dit "répéter le mot-clé" → RÉPÈTE le mot-clé stratégiquement
-   - Si le rapport dit "améliorer la conversion" → AJOUTE des appels à l'action
-3. Garde le même angle, la même cible et les mêmes messages business
-4. Garde la structure générale (H2/H3, listes) mais améliore-la selon les recommandations
-5. N'invente PAS de nouveaux chiffres précis si aucun chiffre n'était présent
-6. Ne rajoute PAS de nouveaux liens externes non mentionnés dans l'article initial
+   - Si le rapport dit "améliorer la conversion" → AJOUTE des appels à l'action en fin de sections pertinentes
+3. STRUCTURE OBLIGATOIRE :
+   - Introduction
+   - Sections H2 principales (contenu de l'article)
+   - FAQ (si recommandée) → TOUJOURS à la fin, juste avant la conclusion
+   - Conclusion
+4. Garde le même angle, la même cible et les mêmes messages business
+5. Garde la structure générale (H2/H3, listes) mais améliore-la selon les recommandations
+6. N'invente PAS de nouveaux chiffres précis si aucun chiffre n'était présent
+7. Ne rajoute PAS de nouveaux liens externes non mentionnés dans l'article initial
+8. NE PLACE JAMAIS la FAQ en plein milieu de l'article - elle doit être à la fin, juste avant la conclusion
 
-OBJECTIF : L'article final DOIT être meilleur que l'initial sur TOUS les critères mentionnés dans le scoring.
+OBJECTIF : L'article final DOIT être meilleur que l'initial sur TOUS les critères mentionnés dans le scoring, avec une structure propre et professionnelle.
 
 Format attendu :
 - Retourne UNIQUEMENT l'article réécrit et amélioré, en Markdown propre.
