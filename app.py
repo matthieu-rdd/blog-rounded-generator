@@ -968,10 +968,12 @@ elif st.session_state.step == 'generation':
                     styled_article = apply_style_refinement(raw_article)
                     
                     # 3. Scoring initial de l'article (avant réécriture finale)
+                    article_title = st.session_state.chosen_variant.get("title", st.session_state.topic)
                     scoring_before = score_article_quality(
                         styled_article,
                         st.session_state.topic,
                         st.session_state.target_keywords,
+                        article_title=article_title
                     )
                     st.session_state.article_scoring_before = scoring_before
                     
@@ -983,11 +985,12 @@ elif st.session_state.step == 'generation':
                         st.session_state.target_keywords,
                     )
                     
-                    # 5. Scoring après amélioration
+                    # 5. Scoring après amélioration (scoring personnalisé différent)
                     scoring_after = score_article_quality(
                         improved_article,
                         st.session_state.topic,
                         st.session_state.target_keywords,
+                        article_title=article_title
                     )
                     st.session_state.article_scoring_after = scoring_after
                     
