@@ -978,20 +978,44 @@ elif st.session_state.step == 'generation':
                     st.session_state.article_scoring_before = scoring_before
                     
                     # 4. Régénération de l'article en appliquant les recommandations de scoring
-                    improved_article = regenerate_article_with_scoring(
-                        styled_article,
-                        scoring_before.get("markdown", "") if scoring_before else "",
-                        st.session_state.topic,
-                        st.session_state.target_keywords,
-                    )
+                    # Itération jusqu'à ce que le score s'améliore
+                    improved_article = styled_article
+                    scoring_after = None
+                    score_before_value = scoring_before.get('global_score') or 0
+                    max_iterations = 3
                     
-                    # 5. Scoring après amélioration (scoring personnalisé différent)
-                    scoring_after = score_article_quality(
-                        improved_article,
-                        st.session_state.topic,
-                        st.session_state.target_keywords,
-                        article_title=article_title
-                    )
+                    for iteration in range(max_iterations):
+                        # Régénérer l'article
+                        improved_article = regenerate_article_with_scoring(
+                            improved_article if iteration > 0 else styled_article,
+                            scoring_before.get("markdown", "") if scoring_before else "",
+                            st.session_state.topic,
+                            st.session_state.target_keywords,
+                        )
+                        
+                        # Re-scorer l'article amélioré
+                        scoring_after = score_article_quality(
+                            improved_article,
+                            st.session_state.topic,
+                            st.session_state.target_keywords,
+                            article_title=article_title
+                        )
+                        
+                        score_after_value = scoring_after.get('global_score') or 0
+                        
+                        # Si le score s'est amélioré, on s'arrête
+                        if score_after_value > score_before_value:
+                            print(f"✅ Score amélioré : {score_before_value} → {score_after_value} (itération {iteration + 1})")
+                            break
+                        elif iteration < max_iterations - 1:
+                            # Si le score n'a pas amélioré, on réitère avec le nouveau scoring
+                            print(f"⚠️  Score non amélioré ({score_after_value} vs {score_before_value}), réitération {iteration + 2}/{max_iterations}")
+                            # Utiliser le nouveau scoring comme base pour la prochaine itération
+                            scoring_before = scoring_after
+                        else:
+                            # Dernière itération, on garde quand même la version améliorée
+                            print(f"⚠️  Score final : {score_after_value} (itération {iteration + 1}/{max_iterations})")
+                    
                     st.session_state.article_scoring_after = scoring_after
                     
                     # 6. Optimisation SEO sur la version améliorée
