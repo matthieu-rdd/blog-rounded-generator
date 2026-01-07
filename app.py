@@ -38,7 +38,10 @@ publish_to_production = None
 fetch_sanity_references = None
 save_article_for_review = None
 load_target_keywords = None
+select_target_keywords = None
 apply_style_refinement = None
+score_article_quality = None
+regenerate_article_with_scoring = None
 
 try:
     # On importe le module directement
@@ -67,7 +70,10 @@ try:
     fetch_sanity_references = generate_module.fetch_sanity_references
     save_article_for_review = generate_module.save_article_for_review
     load_target_keywords = generate_module.load_target_keywords
+    select_target_keywords = generate_module.select_target_keywords
     apply_style_refinement = generate_module.apply_style_refinement
+    score_article_quality = generate_module.score_article_quality
+    regenerate_article_with_scoring = generate_module.regenerate_article_with_scoring
     
 except Exception as e:
     # On stocke l'erreur pour l'afficher après l'authentification
@@ -169,6 +175,10 @@ if 'edited_content_en' not in st.session_state:
     st.session_state.edited_content_en = None
 if 'edit_mode' not in st.session_state:
     st.session_state.edit_mode = False
+if 'article_scoring_before' not in st.session_state:
+    st.session_state.article_scoring_before = None
+if 'article_scoring_after' not in st.session_state:
+    st.session_state.article_scoring_after = None
 
 # Sidebar avec informations
 with st.sidebar:
@@ -180,7 +190,7 @@ with st.sidebar:
     # Navigation entre pages
     page = st.radio(
         "Choisir une page",
-        ["Créer un article", "Historique", "Tokens OpenAI"],
+        ["Créer un article", "Historique", "Tokens OpenAI", "Mots-clés SEO"],
         label_visibility="collapsed"
     )
     
@@ -188,6 +198,8 @@ with st.sidebar:
         st.session_state.page = "history"
     elif page == "Tokens OpenAI":
         st.session_state.page = "tokens"
+    elif page == "Mots-clés SEO":
+        st.session_state.page = "keywords"
     else:
         st.session_state.page = "create"
     
@@ -595,7 +607,9 @@ if st.session_state.step == 'input':
                 # Charger les mots-clés cibles
                 status_text.text("📝 Chargement des mots-clés cibles...")
                 progress_bar.progress(10)
-                st.session_state.target_keywords = load_target_keywords()
+                all_keywords = load_target_keywords()
+                # Sélectionner 2 à 4 mots-clés pertinents en fonction du sujet
+                st.session_state.target_keywords = select_target_keywords(topic, all_keywords)
                 
                 # Charger les articles existants
                 status_text.text("📚 Chargement des articles existants...")
@@ -749,7 +763,7 @@ elif st.session_state.step == 'generation':
     else:
         # Génération de l'article si pas encore fait
         if not st.session_state.final_article:
-            with st.spinner("⏳ Rédaction de l'article complet et optimisation SEO en cours..."):
+            with st.spinner("⏳ Rédaction de l'article complet, scoring et optimisation SEO en cours..."):
                 try:
                     # 1. Génération de l'article brut
                     raw_article = generate_article(
@@ -761,12 +775,36 @@ elif st.session_state.step == 'generation':
                     # 2. Raffinement du style
                     styled_article = apply_style_refinement(raw_article)
                     
-                    # 3. Optimisation SEO
-                    optimized = optimize_seo(styled_article, st.session_state.target_keywords)
-                    optimized["original_content"] = styled_article
+                    # 3. Scoring initial de l'article (avant réécriture finale)
+                    scoring_before = score_article_quality(
+                        styled_article,
+                        st.session_state.topic,
+                        st.session_state.target_keywords,
+                    )
+                    st.session_state.article_scoring_before = scoring_before
+                    
+                    # 4. Régénération de l'article en appliquant les recommandations de scoring
+                    improved_article = regenerate_article_with_scoring(
+                        styled_article,
+                        scoring_before.get("markdown", "") if scoring_before else "",
+                        st.session_state.topic,
+                        st.session_state.target_keywords,
+                    )
+                    
+                    # 5. Scoring après amélioration
+                    scoring_after = score_article_quality(
+                        improved_article,
+                        st.session_state.topic,
+                        st.session_state.target_keywords,
+                    )
+                    st.session_state.article_scoring_after = scoring_after
+                    
+                    # 6. Optimisation SEO sur la version améliorée
+                    optimized = optimize_seo(improved_article, st.session_state.target_keywords)
+                    optimized["original_content"] = improved_article
                     st.session_state.final_article = optimized
                     
-                    # 4. Génération version anglaise
+                    # 7. Génération version anglaise
                     english = generate_english_version(optimized)
                     st.session_state.english_article = english
                     
@@ -781,6 +819,68 @@ elif st.session_state.step == 'generation':
         # Affichage de l'article généré
         if st.session_state.final_article:
             art = st.session_state.final_article
+            
+            # Afficher le scoring éditorial & SEO avant/après
+            if st.session_state.get('article_scoring_before') or st.session_state.get('article_scoring_after'):
+                with st.expander("📊 Scoring éditorial & SEO (avant / après)", expanded=False):
+                    col_score1, col_score2 = st.columns(2)
+                    
+                    before = st.session_state.get('article_scoring_before') or {}
+                    after = st.session_state.get('article_scoring_after') or {}
+                    
+                    with col_score1:
+                        st.markdown("**Avant amélioration**")
+                        if before:
+                            st.metric(
+                                "Score global",
+                                f"{before.get('global_score', 'N/A')}/100"
+                            )
+                            st.markdown(
+                                f"- Contenu : {before.get('content_score', 'N/A')}/20\n"
+                                f"- Lisibilité : {before.get('readability_score', 'N/A')}/20\n"
+                                f"- SEO : {before.get('seo_score', 'N/A')}/30\n"
+                                f"- Conversion : {before.get('conversion_score', 'N/A')}/20\n"
+                                f"- Crédibilité : {before.get('credibility_score', 'N/A')}/10"
+                            )
+                        else:
+                            st.caption("Pas de scoring initial disponible.")
+                    
+                    with col_score2:
+                        st.markdown("**Après amélioration**")
+                        if after:
+                            st.metric(
+                                "Score global",
+                                f"{after.get('global_score', 'N/A')}/100",
+                                delta=(
+                                    (after.get('global_score') or 0)
+                                    - (before.get('global_score') or 0)
+                                    if before and after
+                                    else None
+                                )
+                            )
+                            st.markdown(
+                                f"- Contenu : {after.get('content_score', 'N/A')}/20\n"
+                                f"- Lisibilité : {after.get('readability_score', 'N/A')}/20\n"
+                                f"- SEO : {after.get('seo_score', 'N/A')}/30\n"
+                                f"- Conversion : {after.get('conversion_score', 'N/A')}/20\n"
+                                f"- Crédibilité : {after.get('credibility_score', 'N/A')}/10"
+                            )
+                        else:
+                            st.caption("Pas de scoring après amélioration disponible.")
+                    
+                    # Détail des rapports
+                    st.markdown("---")
+                    col_rep1, col_rep2 = st.columns(2)
+                    with col_rep1:
+                        if before and before.get("markdown"):
+                            with st.expander("📝 Rapport détaillé AVANT", expanded=False):
+                                st.markdown(before["markdown"])
+                    with col_rep2:
+                        if after and after.get("markdown"):
+                            with st.expander("📝 Rapport détaillé APRÈS", expanded=True):
+                                st.markdown(after["markdown"])
+                
+                st.markdown("---")
             
             # Afficher les mots-clés utilisés dans l'article
             if st.session_state.get('target_keywords') or art.get('keywords'):
