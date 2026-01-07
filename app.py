@@ -1063,17 +1063,20 @@ elif st.session_state.step == 'generation':
                         else:
                             st.caption("Pas de scoring après amélioration disponible.")
                     
-                    # Détail des rapports
+                    # Détail des rapports (utiliser des onglets au lieu d'expanders imbriqués)
                     st.markdown("---")
-                    col_rep1, col_rep2 = st.columns(2)
-                    with col_rep1:
-                        if before and before.get("markdown"):
-                            with st.expander("📝 Rapport détaillé AVANT", expanded=False):
+                    if (before and before.get("markdown")) or (after and after.get("markdown")):
+                        tab_before, tab_after = st.tabs(["📝 Rapport AVANT", "📝 Rapport APRÈS"])
+                        with tab_before:
+                            if before and before.get("markdown"):
                                 st.markdown(before["markdown"])
-                    with col_rep2:
-                        if after and after.get("markdown"):
-                            with st.expander("📝 Rapport détaillé APRÈS", expanded=True):
+                            else:
+                                st.info("Pas de rapport détaillé disponible pour la version avant amélioration.")
+                        with tab_after:
+                            if after and after.get("markdown"):
                                 st.markdown(after["markdown"])
+                            else:
+                                st.info("Pas de rapport détaillé disponible pour la version après amélioration.")
                 
                 st.markdown("---")
             
