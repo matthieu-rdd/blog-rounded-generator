@@ -727,48 +727,119 @@ def apply_style_refinement(article: str) -> str:
 Tu es un rédacteur senior B2B français, ton de marque Rounded : expert, direct, un peu mordant mais jamais vulgaire.
 
 Tu reçois ci-dessous un article déjà structuré (H2/H3, paragraphes, listes). 
-Ta mission : RÉÉCRIRE l’article COMPLET en respectant ces règles :
+Ta mission : RÉÉCRIRE l'article COMPLET en appliquant un style premium et professionnel.
 
-1) Structure des phrases
-- Varie la ponctuation : points, virgules, deux-points, points-virgules, parenthèses (avec modération).
-- Évite les phrases trop longues : idéalement 12–22 mots, rarement plus de 30.
-- Commence autant que possible chaque phrase par l’idée clé (thèse), puis 
-  seulement ensuite l’explication, puis un exemple, un chiffre ou une mini-citation.
+RÈGLES DE STYLE STRICTES :
 
-2) Ton & voix
-- Garde un ton professionnel, clair, orienté business.
-- Autorisé : un peu de sarcasme / ironie légère pour pointer les absurdités du réel 
-  (par ex. “évidemment, personne n’a jamais eu un appel perdu un lundi matin…”).
-- 1 à 3 blagues maxi sur tout l’article, subtiles, jamais lourdes, jamais sur les patients.
+1) VARIÉTÉ DE PONCTUATION ET RYTHME
+- Varie la ponctuation de manière stratégique :
+  * Points-virgules (;) pour lier des idées proches
+  * Deux-points (:) pour introduire des exemples ou listes
+  * Parenthèses (modérément) pour ajouts contextuels
+  * Tirets cadratins (—) pour les incises importantes
+  * Points d'exclamation (!) très rarement, uniquement pour des points forts
+- Longueur des phrases : 
+  * 40% de phrases courtes (8-15 mots) pour l'impact
+  * 40% de phrases moyennes (16-25 mots) pour l'équilibre
+  * 20% de phrases longues (26-35 mots) pour la profondeur
+  * JAMAIS plus de 35 mots
+- Structure des phrases :
+  * Commence par l'idée clé (thèse) dans 60% des cas
+  * Utilise l'inversion pour varier (ex: "C'est là que l'IA intervient.")
+  * Alterne phrases déclaratives, interrogatives (rares), et exclamatives (très rares)
 
-3) Progression & transitions
-- Ajoute UNE courte phrase de transition entre chaque H2 pour faire le lien logique
-  (ex : “Avant de parler coûts, regardons d’abord ce qui coince au quotidien.”).
-- Les transitions doivent être naturelles et orienter la suite de la lecture.
+2) TON & VOIX PROFESSIONNELLE
+- Ton : Expert mais accessible, direct sans être brutal
+- Autorise-toi :
+  * Ironie légère et subtile (1-2 fois max sur l'article)
+  * Formulations percutantes ("En réalité, c'est plus simple qu'il n'y paraît.")
+  * Questions rhétoriques occasionnelles pour engager
+- Interdit :
+  * Vulgarité, familiarité excessive
+  * Blagues sur les patients ou situations médicales graves
+  * Ton condescendant ou trop technique
 
-4) Anecdotes & concret
-- Quand c’est pertinent, ajoute de petites anecdotes réalistes (2–3 phrases) :
-  - situations de secrétariat médical
-  - appels ratés, débordement, patients frustrés, médecins débordés, etc.
-- Ces anecdotes doivent rester crédibles, pas romancées.
+3) TRANSITIONS ET PROGRESSION
+- Entre chaque H2 : Ajoute UNE phrase de transition (10-20 mots) qui :
+  * Fait le lien logique avec la section précédente
+  * Annonce subtilement la section suivante
+  * Utilise des connecteurs variés (Cependant, Par ailleurs, Dès lors, En somme, etc.)
+- Dans les paragraphes : Utilise des transitions internes naturelles
+- Structure narrative : Problème → Analyse → Solution → Bénéfices
 
-5) Sources & chiffres clés
-- Si l’article contient déjà des chiffres, études, pourcentages : 
-  - mets-les davantage en valeur (formulations percutantes, “En clair…”, “Concrètement…”).
-- Si tu vois passer des noms d’études, organismes, sources : 
-  - reformule en une phrase qui donne du contexte (“Une étude de [organisme] montre que…”).
-- NE PAS inventer de chiffres qui ne sont pas déjà présents dans le texte.
+4) ANECDOTES ET CONCRET
+- Ajoute 2-4 anecdotes réalistes et crédibles (2-3 phrases chacune) :
+  * Situations vécues en secrétariat médical
+  * Exemples concrets de problèmes résolus
+  * Cas d'usage réels (sans nommer d'entreprises concurrentes)
+- Formule les anecdotes ainsi :
+  * Contexte court → Situation → Impact/Résolution
+  * Exemple : "Un cabinet parisien de 5 médecins recevait 200 appels/jour. Résultat : 30% d'appels manqués. Avec l'automatisation, le taux est tombé à 5%."
 
-6) Mise en forme
-- Garde STRICTEMENT la structure H2/H3 / listes.
-- Ne change pas le sens business général ni les messages clés.
-- Ne rajoute PAS de nouveaux liens vers Donna ou Rounded au-delà de ce qui est prévu
-  dans la version originale.
+5) VALORISATION DES CHIFFRES ET STATISTIQUES
+- Mise en valeur des chiffres :
+  * Utilise des formulations percutantes : "En clair, cela représente…", "Concrètement, cela signifie…"
+  * Compare avec des références : "C'est l'équivalent de…", "Soit près de 2 fois plus que…"
+  * Crée du contraste : "Alors que X% font Y, seulement Z% adoptent la solution."
+- Contextualisation des sources :
+  * "Une étude récente de [organisme] révèle que…"
+  * "Selon les données de [source], publiées en [année]…"
+  * "Les chiffres de [secteur] montrent une tendance claire :…"
+- NE JAMAIS inventer de chiffres, études ou sources
 
-Retourne UNIQUEMENT l’article réécrit, au format Markdown, sans commentaire autour.
+6) STRUCTURE ET MISE EN FORME
+- Garde STRICTEMENT la structure H2/H3 / listes existante
+- Paragraphes :
+  * 2-4 phrases par paragraphe (idéalement 3)
+  * Espacement aéré entre les paragraphes
+  * Premier paragraphe de chaque section : accrocheur (1-2 phrases)
+- Listes :
+  * Utilise des listes à puces pour les points clés
+  * Limite à 5-7 éléments par liste
+  * Ajoute une phrase d'introduction avant chaque liste
+- Ne change PAS :
+  * Le sens business général
+  * Les messages clés
+  * Les liens vers Donna/Rounded (ne pas en ajouter, ne pas en retirer)
+
+7) RYTHME DE LECTURE
+- Alterne les types de contenu :
+  * Paragraphes denses → Paragraphe aéré
+  * Texte continu → Liste à puces
+  * Explication théorique → Anecdote concrète
+- Crée des "points d'ancrage" visuels :
+  * Mots en gras pour les concepts clés (modérément)
+  * Listes pour scander le rythme
+  * Sous-titres H3 pour aérer
+
+8) FINALISATION
+- Relis l'article entier pour :
+  * Vérifier la cohérence du ton
+  * Éliminer les répétitions inutiles
+  * S'assurer que chaque section apporte de la valeur
+  * Vérifier que les transitions sont fluides
+
+Retourne UNIQUEMENT l'article réécrit, au format Markdown, sans commentaire autour.
 """
 
     try:
+        # Analyser l'article pour donner des instructions contextuelles
+        word_count = len(article.split())
+        h2_count = len(re.findall(r'^##\s+', article, re.MULTILINE))
+        has_numbers = bool(re.search(r'\d+%|\d+\s+(fois|fois plus|fois moins)', article))
+        
+        context_instructions = f"""
+CONTEXTE DE L'ARTICLE :
+- Longueur : {word_count} mots
+- Sections principales (H2) : {h2_count}
+- Présence de chiffres/statistiques : {"Oui" if has_numbers else "Non"}
+
+INSTRUCTIONS SPÉCIFIQUES :
+- Si l'article contient des chiffres, mets-les particulièrement en valeur
+- Si l'article a {h2_count} sections, assure-toi d'avoir des transitions fluides entre chacune
+- Adapte le rythme selon la longueur : pour {word_count} mots, privilégie la variété et l'équilibre
+"""
+        
         response = openai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -776,13 +847,14 @@ Retourne UNIQUEMENT l’article réécrit, au format Markdown, sans commentaire 
                 {
                     "role": "user",
                     "content": (
-                        "Voici l'article à réécrire en appliquant STRICTEMENT les règles ci-dessus :\n\n"
+                        f"{context_instructions}\n\n"
+                        "Voici l'article à réécrire en appliquant STRICTEMENT toutes les règles de style ci-dessus :\n\n"
                         f"{article}"
                     ),
                 },
             ],
-            temperature=0.8,
-            max_tokens=4000,
+            temperature=0.7,  # Légèrement réduit pour plus de cohérence
+            max_tokens=4500,  # Plus de tokens pour un style plus riche
         )
 
         styled_article = response.choices[0].message.content
@@ -1253,7 +1325,7 @@ def select_target_keywords(topic: str, all_keywords: List[str], min_k: int = 2, 
 
 
 def optimize_seo(article: str, target_keywords: Optional[List[str]] = None) -> Dict[str, Any]:
-    """Optimise SEO et retourne les métadonnées complètes"""
+    """Optimise SEO et retourne les métadonnées complètes avec intégration avancée des mots-clés"""
     if not openai_client:
         # Fallback simple
         slug = article[:50].lower().replace(' ', '-').replace("'", '').replace(",", '').replace("?", '').replace(".", '')
@@ -1276,44 +1348,121 @@ def optimize_seo(article: str, target_keywords: Optional[List[str]] = None) -> D
             "translationGroup": slug
         }
     
-    print("🔍 Optimisation SEO...")
+    print("🔍 Optimisation SEO avancée...")
     
-    system_prompt = """You are an expert SEO copywriter. Analyze the article and return JSON with ALL these fields:
-- title: SEO-optimized title (max 65 chars, include main keyword)
-- summary: Meta description for excerpt (155-160 chars, compelling)
-- blog_post: Full HTML content with proper tags (<h2>, <h3>, <p>, <ul>, <li>, <strong>)
-- slug: URL-friendly slug (lowercase, hyphens, no special chars)
-- readTime: Reading time estimation (e.g., "5 min", "8 min")
-- tag: Category from: actualites-tendances, guides-pratiques
-- keywords: Array of 5-8 relevant keywords
-- focusKeyword: Main keyword (1-2 words)
-- metaTitle: SEO title for meta tag (50-60 chars)
-- metaDescription: SEO meta description (155-160 chars)
-- ogTitle: Open Graph title (can be same as title or slightly different)
-- ogDescription: Open Graph description (155-160 chars)
-- canonicalUrl: Full canonical URL (https://callrounded.com/blog/{slug})
-- translationGroup: Translation group ID (same as slug)
-
-Convert Markdown to HTML:
-- # Title → <h2>Title</h2>
-- ## Subtitle → <h3>Subtitle</h3>
-- **bold** → <strong>bold</strong>
-- * item → <ul><li>item</li></ul>
-- Regular text → <p>text</p>"""
-    # Si des mots-clés cibles existent, on les ajoute explicitement au prompt SEO
+    # Analyser la densité actuelle des mots-clés dans l'article
+    keyword_analysis = ""
     if target_keywords:
-        joined = ", ".join(target_keywords)
-        system_prompt += f"\n\nIMPORTANT:\n- You MUST prioritize and naturally include the following SEO keywords when relevant: {joined}.\n- Return them in the 'keywords' array field (add more if useful, but always keep these)."
+        article_lower = article.lower()
+        keyword_analysis = "\n\nANALYSE ACTUELLE DES MOTS-CLÉS:\n"
+        for kw in target_keywords:
+            count = article_lower.count(kw.lower())
+            keyword_analysis += f"- '{kw}': {count} occurrence(s)\n"
+    
+    # Calculer le temps de lecture estimé
+    word_count = len(article.split())
+    read_time = max(3, round(word_count / 200))  # ~200 mots/min
+    
+    system_prompt = """Tu es un expert SEO français spécialisé en optimisation de contenu B2B pour le secteur médical.
+
+Ta mission : Optimiser l'article pour le SEO tout en gardant un contenu naturel et lisible.
+
+RÈGLES SEO STRICTES :
+
+1. INTÉGRATION DES MOTS-CLÉS :
+   - Le mot-clé principal DOIT apparaître dans :
+     * Le titre H1 (début si possible)
+     * Au moins 1 titre H2
+     * Les 100 premiers mots de l'article
+     * La conclusion (derniers 100 mots)
+   - Densité optimale : 1-2% pour le mot-clé principal, 0.5-1% pour les mots-clés secondaires
+   - Utilise des variations naturelles (synonymes, pluriels, formes conjuguées)
+   - Évite le keyword stuffing (sur-optimisation)
+
+2. OPTIMISATION DES TITRES :
+   - H2 : Intègre le mot-clé principal dans au moins 2-3 titres H2
+   - H3 : Utilise des mots-clés secondaires ou des variations dans les H3
+   - Structure : Mot-clé + valeur ajoutée (ex: "IA vocale : comment améliorer la productivité")
+
+3. META TAGS :
+   - metaTitle : 50-60 caractères, mot-clé principal au début
+   - metaDescription : 155-160 caractères, inclut le mot-clé principal + appel à l'action
+   - ogTitle/ogDescription : Optimisés pour le partage social
+
+4. MOTS-CLÉS LSI (Latent Semantic Indexing) :
+   - Ajoute 3-5 mots-clés sémantiquement liés (ex: si "IA vocale" → "assistant vocal", "robot conversationnel", "automatisation téléphonique")
+   - Ces mots-clés doivent être naturellement intégrés dans le contenu
+
+5. STRUCTURE HTML :
+   - Convertis Markdown en HTML propre
+   - Utilise <h2> pour les titres principaux, <h3> pour les sous-titres
+   - <strong> pour les mots-clés importants (avec modération)
+   - <p> pour les paragraphes
+   - <ul><li> pour les listes
+
+6. SLUG :
+   - URL-friendly (lowercase, tirets, pas d'accents)
+   - Inclut le mot-clé principal
+   - Max 60 caractères
+
+FORMAT DE RETOUR (JSON strict) :
+{
+  "title": "Titre optimisé SEO (max 65 chars, mot-clé principal inclus)",
+  "summary": "Résumé accrocheur (155-160 chars, mot-clé principal + CTA)",
+  "blog_post": "Contenu HTML complet avec mots-clés intégrés naturellement",
+  "slug": "slug-optimise-avec-mot-cle",
+  "readTime": "X min",
+  "tag": "actualites-tendances" ou "guides-pratiques",
+  "keywords": ["mot-clé principal", "mot-clé 2", "mot-clé 3", "LSI 1", "LSI 2", ...],
+  "focusKeyword": "mot-clé principal (1-2 mots)",
+  "metaTitle": "Titre meta SEO (50-60 chars, mot-clé au début)",
+  "metaDescription": "Description meta (155-160 chars, mot-clé + CTA)",
+  "ogTitle": "Titre Open Graph",
+  "ogDescription": "Description Open Graph (155-160 chars)",
+  "canonicalUrl": "https://callrounded.com/blog/{slug}",
+  "translationGroup": "{slug}",
+  "keywordDensity": {
+    "mainKeyword": "X%",
+    "secondaryKeywords": ["mot-clé 2: Y%", "mot-clé 3: Z%"]
+  }
+}"""
+    
+    # Si des mots-clés cibles existent, on les ajoute explicitement au prompt SEO
+    keywords_context = ""
+    if target_keywords:
+        main_keyword = target_keywords[0] if target_keywords else ""
+        secondary_keywords = ", ".join(target_keywords[1:4]) if len(target_keywords) > 1 else ""
+        keywords_context = f"""
+
+MOTS-CLÉS CIBLES À OPTIMISER :
+- Mot-clé principal : "{main_keyword}" (DOIT être dans le titre, H2, début, fin)
+- Mots-clés secondaires : {secondary_keywords if secondary_keywords else "Aucun"}
+{keyword_analysis}
+
+IMPORTANT :
+- Intègre "{main_keyword}" naturellement dans le titre, au moins 2 H2, les 100 premiers mots, et la conclusion
+- Utilise les mots-clés secondaires dans les H3 et le corps de l'article
+- Densité cible : 1-2% pour "{main_keyword}", 0.5-1% pour les autres
+- Ajoute 3-5 mots-clés LSI sémantiquement liés"""
+    
+    user_prompt = f"""Article à optimiser SEO :
+
+{article}
+
+{keywords_context if keywords_context else ""}
+
+Optimise cet article en respectant TOUTES les règles SEO ci-dessus. Retourne UNIQUEMENT le JSON, sans texte autour."""
     
     try:
         response = openai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": article}
+                {"role": "user", "content": user_prompt}
             ],
             response_format={"type": "json_object"},
-            temperature=0.7
+            temperature=0.3,  # Plus bas pour plus de cohérence SEO
+            max_tokens=4000
         )
         
         # Tracker les tokens
@@ -1343,26 +1492,55 @@ Convert Markdown to HTML:
         
         # S'assurer que tous les champs sont présents
         slug = result.get("slug", article[:50].lower().replace(' ', '-'))
+        slug = re.sub(r'[^a-z0-9-]', '', slug.lower())
         
+        # Optimiser metaTitle avec mot-clé principal si disponible
         meta_title = result.get("metaTitle", title)[:60].strip()
+        if target_keywords and target_keywords[0] not in meta_title.lower():
+            # Essayer d'inclure le mot-clé principal
+            main_kw = target_keywords[0]
+            if len(meta_title) + len(main_kw) + 3 <= 60:
+                meta_title = f"{main_kw}: {meta_title}"
         meta_title = meta_title.replace('\n', ' ').replace('\r', ' ')
         meta_title = re.sub(r'\s+', ' ', meta_title)
-        result["metaTitle"] = meta_title
+        result["metaTitle"] = meta_title[:60]
+        
+        # Optimiser metaDescription avec mot-clé et CTA
+        meta_desc = result.get("metaDescription", result.get("summary", ""))[:160].strip()
+        if target_keywords and target_keywords[0] not in meta_desc.lower():
+            main_kw = target_keywords[0]
+            if len(meta_desc) + len(main_kw) + 10 <= 160:
+                meta_desc = f"{main_kw}: {meta_desc}"
+        # Ajouter un CTA si pas présent
+        if "découvrir" not in meta_desc.lower() and "apprendre" not in meta_desc.lower():
+            if len(meta_desc) + 15 <= 160:
+                meta_desc = f"{meta_desc} Découvrez comment."
+        result["metaDescription"] = meta_desc[:160]
         
         og_title = result.get("ogTitle", title).strip()
         og_title = og_title.replace('\n', ' ').replace('\r', ' ')
         og_title = re.sub(r'\s+', ' ', og_title)
         result["ogTitle"] = og_title
         
-        result.setdefault("metaDescription", result.get("summary", "")[:160].strip())
-        result.setdefault("ogDescription", result.get("summary", "")[:160].strip())
+        result.setdefault("ogDescription", result.get("metaDescription", "")[:160].strip())
         result.setdefault("canonicalUrl", f"https://callrounded.com/blog/{slug}")
         result.setdefault("translationGroup", slug)
-        # Si l'IA ne renvoie pas de keywords, on prend ceux du fichier
-        if "keywords" not in result or not isinstance(result["keywords"], list):
-            result["keywords"] = target_keywords or []
+        result.setdefault("readTime", f"{read_time} min")
         
-        print("✅ SEO optimisé")
+        # S'assurer que les mots-clés cibles sont inclus
+        if target_keywords:
+            existing_keywords = result.get("keywords", [])
+            # Ajouter les mots-clés cibles s'ils ne sont pas déjà présents
+            for kw in target_keywords:
+                if kw not in existing_keywords:
+                    existing_keywords.append(kw)
+            result["keywords"] = existing_keywords[:8]  # Max 8 mots-clés
+        
+        # Vérifier que focusKeyword est défini
+        if not result.get("focusKeyword") and target_keywords:
+            result["focusKeyword"] = target_keywords[0]
+        
+        print("✅ SEO optimisé avec intégration avancée des mots-clés")
         return result
     except Exception as e:
         print(f"⚠️  Erreur SEO: {e}")
