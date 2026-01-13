@@ -190,12 +190,14 @@ with st.sidebar:
     # Navigation entre pages
     page = st.radio(
         "Choisir une page",
-        ["Créer un article", "Historique", "Tokens OpenAI", "Mots-clés SEO"],
+        ["Créer un article", "Historique", "Analytics", "Tokens OpenAI", "Mots-clés SEO"],
         label_visibility="collapsed"
     )
     
     if page == "Historique":
         st.session_state.page = "history"
+    elif page == "Analytics":
+        st.session_state.page = "analytics"
     elif page == "Tokens OpenAI":
         st.session_state.page = "tokens"
     elif page == "Mots-clés SEO":
@@ -571,6 +573,161 @@ if st.session_state.get('page') == 'tokens':
     
     except Exception as e:
         st.error(f"Erreur lors du chargement de l'historique: {e}")
+        import traceback
+        st.code(traceback.format_exc())
+    
+    st.stop()
+
+# --- PAGE ANALYTICS ---
+if st.session_state.get('page') == 'analytics':
+    st.header("📊 Analytics & Reporting")
+    
+    try:
+        from utils.analytics import (
+            get_comprehensive_stats,
+            export_stats_csv,
+            export_stats_json
+        )
+        import plotly.express as px
+        import plotly.graph_objects as go
+        import pandas as pd
+        
+        stats = get_comprehensive_stats()
+        
+        # Métriques principales
+        st.subheader("📈 Métriques Principales")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Total Articles", stats["articles"]["total"])
+        with col2:
+            st.metric("Coût Total", f"${stats['costs']['total']:.4f}")
+        with col3:
+            avg_time = stats["generation"].get("avg_time_per_article_minutes", 0)
+            st.metric("Temps Moyen/Article", f"{avg_time:.1f} min")
+        with col4:
+            avg_words = stats["publication"].get("avg_word_count", 0)
+            st.metric("Mots Moyens", f"{avg_words:.0f}")
+        
+        st.markdown("---")
+        
+        # Graphique évolution des coûts
+        if stats["costs"]["trends_30d"]:
+            st.subheader("💰 Évolution des Coûts (30 derniers jours)")
+            df_costs = pd.DataFrame(stats["costs"]["trends_30d"])
+            df_costs["date"] = pd.to_datetime(df_costs["date"])
+            
+            fig_costs = px.line(
+                df_costs,
+                x="date",
+                y="cost",
+                title="Coûts quotidiens OpenAI",
+                labels={"cost": "Coût ($)", "date": "Date"}
+            )
+            fig_costs.update_traces(line_color="#1f77b4", line_width=2)
+            st.plotly_chart(fig_costs, use_container_width=True)
+            
+            # Statistiques coûts
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Coût Moyen/Jour", f"${df_costs['cost'].mean():.4f}")
+            with col2:
+                st.metric("Coût Max/Jour", f"${df_costs['cost'].max():.4f}")
+            with col3:
+                st.metric("Total 30 jours", f"${df_costs['cost'].sum():.4f}")
+        
+        st.markdown("---")
+        
+        # Statistiques de publication
+        st.subheader("📝 Statistiques de Publication")
+        pub_stats = stats["publication"]
+        
+        if pub_stats.get("monthly_count"):
+            st.markdown("**Articles par mois :**")
+            df_monthly = pd.DataFrame([
+                {"Mois": month, "Articles": count}
+                for month, count in sorted(pub_stats["monthly_count"].items())
+            ])
+            
+            fig_monthly = px.bar(
+                df_monthly,
+                x="Mois",
+                y="Articles",
+                title="Nombre d'articles générés par mois",
+                color="Articles",
+                color_continuous_scale="Blues"
+            )
+            st.plotly_chart(fig_monthly, use_container_width=True)
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Mots Moyens/Article", f"{pub_stats.get('avg_word_count', 0):.0f}")
+        with col2:
+            st.metric("Temps Lecture Moyen", f"{pub_stats.get('avg_read_time', 0):.1f} min")
+        with col3:
+            st.metric("Total Mots", f"{pub_stats.get('total_words', 0):,}")
+        
+        st.markdown("---")
+        
+        # Statistiques de génération
+        st.subheader("⏱️ Statistiques de Génération")
+        gen_stats = stats["generation"]
+        
+        if gen_stats:
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Total Générations", gen_stats.get("total_generations", 0))
+            with col2:
+                total_time_min = gen_stats.get("total_time_seconds", 0) / 60
+                st.metric("Temps Total", f"{total_time_min:.1f} min")
+            with col3:
+                st.metric("Temps Moyen/Article", f"{gen_stats.get('avg_time_per_article_minutes', 0):.1f} min")
+        
+        st.markdown("---")
+        
+        # Articles récents
+        st.subheader("📄 Articles Récents")
+        if stats["articles"]["metadata"]:
+            df_articles = pd.DataFrame(stats["articles"]["metadata"])
+            st.dataframe(
+                df_articles[["title", "word_count", "read_time", "created_at"]].head(10),
+                use_container_width=True,
+                hide_index=True
+            )
+        else:
+            st.info("Aucun article trouvé")
+        
+        st.markdown("---")
+        
+        # Export
+        st.subheader("💾 Export des Données")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            csv_data = export_stats_csv(stats)
+            st.download_button(
+                label="📥 Télécharger CSV",
+                data=csv_data,
+                file_name=f"analytics_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
+        
+        with col2:
+            json_data = export_stats_json(stats)
+            st.download_button(
+                label="📥 Télécharger JSON",
+                data=json_data,
+                file_name=f"analytics_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                mime="application/json",
+                use_container_width=True
+            )
+    
+    except ImportError as e:
+        st.warning(f"⚠️  Bibliothèques manquantes : {e}")
+        st.info("Installez plotly et pandas : `pip install plotly pandas`")
+    except Exception as e:
+        st.error(f"Erreur lors du chargement des analytics: {e}")
         import traceback
         st.code(traceback.format_exc())
     
@@ -1023,6 +1180,22 @@ elif st.session_state.step == 'generation':
                     optimized["original_content"] = improved_article
                     st.session_state.final_article = optimized
                     
+                    # 6.5. Analyse SEO avancée
+                    try:
+                        from utils.seo_analyzer import analyze_seo_comprehensive
+                        seo_analysis = analyze_seo_comprehensive(
+                            improved_article,
+                            optimized.get("title", ""),
+                            optimized.get("metaTitle", ""),
+                            optimized.get("metaDescription", ""),
+                            st.session_state.target_keywords or [],
+                            optimized.get("focusKeyword")
+                        )
+                        st.session_state.seo_analysis = seo_analysis
+                    except Exception as e:
+                        print(f"⚠️  Erreur analyse SEO: {e}")
+                        st.session_state.seo_analysis = None
+                    
                     # 7. Génération version anglaise
                     english = generate_english_version(optimized)
                     st.session_state.english_article = english
@@ -1133,6 +1306,153 @@ elif st.session_state.step == 'generation':
                         st.markdown("---")
                         st.markdown(f"**Focus Keyword :** `{art.get('focusKeyword')}`")
                 st.markdown("---")
+            
+            # Analyse SEO avancée
+            if st.session_state.get('seo_analysis'):
+                try:
+                    import pandas as pd
+                except ImportError:
+                    pd = None
+                
+                with st.expander("🔍 Analyse SEO Avancée", expanded=False):
+                    seo_analysis = st.session_state.seo_analysis
+                    
+                    # Score global SEO
+                    st.subheader("Score SEO Global")
+                    overall_score = seo_analysis.get("overall_score", 0)
+                    st.metric("Score SEO", f"{overall_score}/100")
+                    
+                    # Barre de progression
+                    st.progress(overall_score / 100)
+                    
+                    st.markdown("---")
+                    
+                    # Densité des mots-clés
+                    st.subheader("📊 Densité des Mots-clés")
+                    keyword_density = seo_analysis.get("keyword_density", {})
+                    if keyword_density:
+                        if pd:
+                            df_density = pd.DataFrame([
+                                {"Mot-clé": kw, "Densité (%)": density}
+                                for kw, density in keyword_density.items()
+                            ])
+                            st.dataframe(df_density, use_container_width=True, hide_index=True)
+                        else:
+                            # Affichage simple si pandas n'est pas disponible
+                            for kw, density in keyword_density.items():
+                                st.markdown(f"**{kw}** : {density}%")
+                        
+                        # Recommandations densité
+                        for kw, density in keyword_density.items():
+                            if density < 1.0:
+                                st.warning(f"⚠️  '{kw}' : Densité trop faible ({density}%). Cible : 1-2%")
+                            elif density > 2.5:
+                                st.warning(f"⚠️  '{kw}' : Densité trop élevée ({density}%). Risque de sur-optimisation")
+                            else:
+                                st.success(f"✅ '{kw}' : Densité optimale ({density}%)")
+                    else:
+                        st.info("Aucune densité calculée")
+                    
+                    st.markdown("---")
+                    
+                    # Suggestions LSI
+                    lsi_suggestions = seo_analysis.get("lsi_suggestions", [])
+                    if lsi_suggestions:
+                        st.subheader("💡 Suggestions Mots-clés LSI")
+                        st.markdown("Mots-clés sémantiquement liés à intégrer :")
+                        for suggestion in lsi_suggestions:
+                            st.markdown(f"• {suggestion}")
+                    else:
+                        st.info("Aucune suggestion LSI disponible")
+                    
+                    st.markdown("---")
+                    
+                    # Lisibilité
+                    st.subheader("📖 Score de Lisibilité (Flesch Reading Ease)")
+                    readability = seo_analysis.get("readability", {})
+                    if readability:
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            st.metric("Score", f"{readability.get('score', 0):.1f}/100")
+                        with col2:
+                            st.metric("Niveau", readability.get("level", "N/A"))
+                        with col3:
+                            st.metric("Phrases", readability.get("sentences", 0))
+                        
+                        st.caption(f"Mots : {readability.get('words', 0)} | "
+                                 f"Longueur moyenne phrase : {readability.get('avg_sentence_length', 0):.1f} mots")
+                        
+                        # Recommandation lisibilité
+                        if readability.get("score", 0) < 50:
+                            st.warning("⚠️  Lisibilité faible. Utilisez des phrases plus courtes et un vocabulaire plus simple.")
+                        elif readability.get("score", 0) >= 60:
+                            st.success("✅ Lisibilité excellente")
+                    
+                    st.markdown("---")
+                    
+                    # Longueurs optimales
+                    st.subheader("📏 Longueurs Optimales")
+                    lengths = seo_analysis.get("lengths", {})
+                    if lengths:
+                        for field_name, field_data in lengths.items():
+                            field_label = {
+                                "title": "Titre",
+                                "meta_title": "Meta Title",
+                                "meta_description": "Meta Description"
+                            }.get(field_name, field_name)
+                            
+                            col1, col2 = st.columns([1, 3])
+                            with col1:
+                                status = "✅" if field_data.get("optimal") else "⚠️"
+                                st.markdown(f"**{field_label}** {status}")
+                            with col2:
+                                st.caption(f"{field_data.get('length', 0)} chars "
+                                         f"({field_data.get('min', 0)}-{field_data.get('max', 0)} optimal)")
+                                if not field_data.get("optimal"):
+                                    st.caption(f"💡 {field_data.get('recommendation', '')}")
+                    
+                    st.markdown("---")
+                    
+                    # Liens internes
+                    st.subheader("🔗 Liens Internes")
+                    links = seo_analysis.get("links", {})
+                    if links:
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.metric("Liens Internes", links.get("internal_count", 0))
+                        with col2:
+                            st.metric("Liens Externes", links.get("external_count", 0))
+                        
+                        st.caption(links.get("recommendation", ""))
+                        
+                        if links.get("internal_links"):
+                            with st.expander("Voir les liens internes", expanded=False):
+                                for link in links["internal_links"]:
+                                    st.markdown(f"• [{link['text']}]({link['url']})")
+                    
+                    st.markdown("---")
+                    
+                    # Structure
+                    st.subheader("📐 Structure")
+                    structure = seo_analysis.get("structure", {})
+                    if structure:
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.metric("Titres H2", structure.get("h2_count", 0))
+                        with col2:
+                            st.metric("Titres H3", structure.get("h3_count", 0))
+                        
+                        if structure.get("h2_count", 0) < 2:
+                            st.warning("⚠️  Ajoutez au moins 2-3 titres H2 pour améliorer la structure")
+                    
+                    st.markdown("---")
+                    
+                    # Recommandations globales
+                    recommendations = seo_analysis.get("recommendations", [])
+                    if recommendations:
+                        st.subheader("💡 Recommandations SEO")
+                        for rec in recommendations:
+                            st.markdown(f"• {rec}")
             
             # Afficher les sources utilisées avec détails
             if st.session_state.get('web_sources'):

@@ -1,0 +1,625 @@
+[
+  {
+    "timestamp": "2026-01-07T11:22:14.527229",
+    "operation": "generate_variants",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1216,
+    "completion_tokens": 524,
+    "total_tokens": 1740,
+    "topic": "L'ia dans les secretariat d'anesthesie"
+  },
+  {
+    "timestamp": "2026-01-07T11:25:02.291172",
+    "operation": "generate_variants",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 786,
+    "completion_tokens": 538,
+    "total_tokens": 1324,
+    "topic": "l'ia dans les secreteriats medicaux d'anesthesistes"
+  },
+  {
+    "timestamp": "2026-01-07T11:25:52.703780",
+    "operation": "generate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1869,
+    "completion_tokens": 1331,
+    "total_tokens": 3200,
+    "article_title": "Optimiser la Gestion des Rendez-vous d'Anesthésie avec l'IA"
+  },
+  {
+    "timestamp": "2026-01-07T11:26:16.268590",
+    "operation": "style_refinement",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1929,
+    "completion_tokens": 1251,
+    "total_tokens": 3180
+  },
+  {
+    "timestamp": "2026-01-07T11:26:45.439921",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1635,
+    "completion_tokens": 1800,
+    "total_tokens": 3435
+  },
+  {
+    "timestamp": "2026-01-07T11:27:03.793284",
+    "operation": "translate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1379,
+    "completion_tokens": 890,
+    "total_tokens": 2269,
+    "article_title": "Optimiser la Gestion des Rendez-vous d'Anesthésie avec l'IA"
+  },
+  {
+    "timestamp": "2026-01-07T11:27:07.550787",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1028,
+    "completion_tokens": 162,
+    "total_tokens": 1190,
+    "article_title": "Optimiser la Gestion des Rendez-vous d'Anesthésie avec l'IA"
+  },
+  {
+    "timestamp": "2026-01-07T11:39:34.634525",
+    "operation": "generate_variants",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 786,
+    "completion_tokens": 486,
+    "total_tokens": 1272,
+    "topic": "comment l'ia vocale peut changer la relation patient - medecins"
+  },
+  {
+    "timestamp": "2026-01-07T11:40:18.477607",
+    "operation": "generate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1776,
+    "completion_tokens": 1422,
+    "total_tokens": 3198,
+    "article_title": "L'IA vocale et la réduction des temps d'attente pour les patients"
+  },
+  {
+    "timestamp": "2026-01-07T11:40:45.664990",
+    "operation": "style_refinement",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2020,
+    "completion_tokens": 1364,
+    "total_tokens": 3384
+  },
+  {
+    "timestamp": "2026-01-07T11:41:04.883854",
+    "operation": "score_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1761,
+    "completion_tokens": 797,
+    "total_tokens": 2558,
+    "topic": "comment l'ia vocale peut changer la relation patient - medecins"
+  },
+  {
+    "timestamp": "2026-01-07T11:41:33.390777",
+    "operation": "regenerate_with_scoring",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2400,
+    "completion_tokens": 1545,
+    "total_tokens": 3945,
+    "topic": "comment l'ia vocale peut changer la relation patient - medecins"
+  },
+  {
+    "timestamp": "2026-01-07T11:43:01.167105",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1929,
+    "completion_tokens": 2094,
+    "total_tokens": 4023
+  },
+  {
+    "timestamp": "2026-01-07T11:43:23.660799",
+    "operation": "translate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1673,
+    "completion_tokens": 1095,
+    "total_tokens": 2768,
+    "article_title": "IA Vocale : Réduction des Temps d'Attente pour Patients"
+  },
+  {
+    "timestamp": "2026-01-07T11:43:27.584121",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1233,
+    "completion_tokens": 174,
+    "total_tokens": 1407,
+    "article_title": "IA Vocale : Réduction des Temps d'Attente pour Patients"
+  },
+  {
+    "timestamp": "2026-01-07T11:49:38.374886",
+    "operation": "generate_variants",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 797,
+    "completion_tokens": 550,
+    "total_tokens": 1347,
+    "topic": "L'ia pour les secretariat medicaux une vrai revolution ? ou un effet de mode ?"
+  },
+  {
+    "timestamp": "2026-01-07T12:00:47.626096",
+    "operation": "generate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1860,
+    "completion_tokens": 1509,
+    "total_tokens": 3369,
+    "article_title": "L'impact des agents vocaux IA sur l'efficacité du secrétariat médical"
+  },
+  {
+    "timestamp": "2026-01-07T12:01:19.512577",
+    "operation": "style_refinement",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2107,
+    "completion_tokens": 1440,
+    "total_tokens": 3547
+  },
+  {
+    "timestamp": "2026-01-07T12:01:33.880074",
+    "operation": "score_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2474,
+    "completion_tokens": 795,
+    "total_tokens": 3269,
+    "topic": "L'ia pour les secretariat medicaux une vrai revolution ? ou un effet de mode ?"
+  },
+  {
+    "timestamp": "2026-01-07T12:02:14.860621",
+    "operation": "regenerate_with_scoring",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2484,
+    "completion_tokens": 1685,
+    "total_tokens": 4169,
+    "topic": "L'ia pour les secretariat medicaux une vrai revolution ? ou un effet de mode ?"
+  },
+  {
+    "timestamp": "2026-01-07T12:02:31.050590",
+    "operation": "score_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2719,
+    "completion_tokens": 874,
+    "total_tokens": 3593,
+    "topic": "L'ia pour les secretariat medicaux une vrai revolution ? ou un effet de mode ?"
+  },
+  {
+    "timestamp": "2026-01-07T12:03:14.256334",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2074,
+    "completion_tokens": 2253,
+    "total_tokens": 4327
+  },
+  {
+    "timestamp": "2026-01-07T12:03:39.946919",
+    "operation": "translate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1813,
+    "completion_tokens": 1226,
+    "total_tokens": 3039,
+    "article_title": "Impact des agents vocaux IA sur le secrétariat médical"
+  },
+  {
+    "timestamp": "2026-01-07T12:03:43.770828",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1364,
+    "completion_tokens": 186,
+    "total_tokens": 1550,
+    "article_title": "Impact des agents vocaux IA sur le secrétariat médical"
+  },
+  {
+    "timestamp": "2026-01-07T12:20:59.734018",
+    "operation": "generate_variants",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 772,
+    "completion_tokens": 483,
+    "total_tokens": 1255,
+    "topic": "L'ia pour les secretaire medical"
+  },
+  {
+    "timestamp": "2026-01-07T12:21:22.482954",
+    "operation": "generate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1764,
+    "completion_tokens": 969,
+    "total_tokens": 2733,
+    "article_title": "L'impact de l'IA sur la productivité des secrétaires médicaux"
+  },
+  {
+    "timestamp": "2026-01-07T12:21:41.758974",
+    "operation": "style_refinement",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1567,
+    "completion_tokens": 999,
+    "total_tokens": 2566
+  },
+  {
+    "timestamp": "2026-01-07T12:21:55.272751",
+    "operation": "score_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2017,
+    "completion_tokens": 755,
+    "total_tokens": 2772,
+    "topic": "L'ia pour les secretaire medical"
+  },
+  {
+    "timestamp": "2026-01-07T12:22:18.140226",
+    "operation": "regenerate_with_scoring",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1990,
+    "completion_tokens": 1152,
+    "total_tokens": 3142,
+    "topic": "L'ia pour les secretaire medical"
+  },
+  {
+    "timestamp": "2026-01-07T12:22:32.856451",
+    "operation": "score_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2170,
+    "completion_tokens": 855,
+    "total_tokens": 3025,
+    "topic": "L'ia pour les secretaire medical"
+  },
+  {
+    "timestamp": "2026-01-07T12:23:00.900951",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1536,
+    "completion_tokens": 1636,
+    "total_tokens": 3172
+  },
+  {
+    "timestamp": "2026-01-07T12:23:16.781281",
+    "operation": "translate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1280,
+    "completion_tokens": 820,
+    "total_tokens": 2100,
+    "article_title": "IA pour Centre d'Appel : Boostez la Productivité des Secrétaires"
+  },
+  {
+    "timestamp": "2026-01-07T12:23:19.928036",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 958,
+    "completion_tokens": 167,
+    "total_tokens": 1125,
+    "article_title": "IA pour Centre d'Appel : Boostez la Productivité des Secrétaires"
+  },
+  {
+    "timestamp": "2026-01-07T12:28:08.045765",
+    "operation": "generate_variants",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 790,
+    "completion_tokens": 472,
+    "total_tokens": 1262,
+    "topic": "L'impact de l'IA sur la productivité des secrétaires médicaux"
+  },
+  {
+    "timestamp": "2026-01-07T12:28:43.849062",
+    "operation": "generate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1811,
+    "completion_tokens": 1738,
+    "total_tokens": 3549,
+    "article_title": "Mesurer l'impact de l'IA sur la productivité des secrétaires médicaux en 2025"
+  },
+  {
+    "timestamp": "2026-01-07T12:29:21.434904",
+    "operation": "style_refinement",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2336,
+    "completion_tokens": 1702,
+    "total_tokens": 4038
+  },
+  {
+    "timestamp": "2026-01-07T12:30:35.249546",
+    "operation": "regenerate_with_scoring",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2370,
+    "completion_tokens": 1866,
+    "total_tokens": 4236,
+    "topic": "L'impact de l'IA sur la productivité des secrétaires médicaux"
+  },
+  {
+    "timestamp": "2026-01-07T12:31:51.536443",
+    "operation": "regenerate_with_scoring",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2534,
+    "completion_tokens": 1906,
+    "total_tokens": 4440,
+    "topic": "L'impact de l'IA sur la productivité des secrétaires médicaux"
+  },
+  {
+    "timestamp": "2026-01-07T12:32:08.860303",
+    "operation": "score_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2940,
+    "completion_tokens": 863,
+    "total_tokens": 3803,
+    "topic": "L'impact de l'IA sur la productivité des secrétaires médicaux"
+  },
+  {
+    "timestamp": "2026-01-07T12:32:58.958131",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2292,
+    "completion_tokens": 2548,
+    "total_tokens": 4840
+  },
+  {
+    "timestamp": "2026-01-07T12:33:25.253201",
+    "operation": "translate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2034,
+    "completion_tokens": 1421,
+    "total_tokens": 3455,
+    "article_title": "Impact de l'IA sur la productivité des secrétaires médicaux"
+  },
+  {
+    "timestamp": "2026-01-07T12:33:31.209635",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1559,
+    "completion_tokens": 200,
+    "total_tokens": 1759,
+    "article_title": "Impact de l'IA sur la productivité des secrétaires médicaux"
+  },
+  {
+    "timestamp": "2026-01-13T14:41:15.284505",
+    "operation": "generate_variants",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 781,
+    "completion_tokens": 389,
+    "total_tokens": 1170,
+    "topic": "comment construire un bon agent vocal pour répondre au télésecretariat medical"
+  },
+  {
+    "timestamp": "2026-01-13T14:44:21.213761",
+    "operation": "generate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1727,
+    "completion_tokens": 1530,
+    "total_tokens": 3257,
+    "article_title": "Optimiser l'accueil téléphonique médical : critères d'un agent vocal efficace"
+  },
+  {
+    "timestamp": "2026-01-13T14:44:57.073822",
+    "operation": "style_refinement",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2128,
+    "completion_tokens": 1543,
+    "total_tokens": 3671
+  },
+  {
+    "timestamp": "2026-01-13T14:45:19.079721",
+    "operation": "score_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2986,
+    "completion_tokens": 895,
+    "total_tokens": 3881,
+    "topic": "comment construire un bon agent vocal pour répondre au télésecretariat medical"
+  },
+  {
+    "timestamp": "2026-01-13T14:45:58.621436",
+    "operation": "regenerate_with_scoring",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2992,
+    "completion_tokens": 1503,
+    "total_tokens": 4495,
+    "topic": "comment construire un bon agent vocal pour répondre au télésecretariat medical"
+  },
+  {
+    "timestamp": "2026-01-13T14:46:16.067608",
+    "operation": "score_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2947,
+    "completion_tokens": 873,
+    "total_tokens": 3820,
+    "topic": "comment construire un bon agent vocal pour répondre au télésecretariat medical"
+  },
+  {
+    "timestamp": "2026-01-13T14:47:15.352844",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1886,
+    "completion_tokens": 2252,
+    "total_tokens": 4138
+  },
+  {
+    "timestamp": "2026-01-13T14:47:42.447791",
+    "operation": "translate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1631,
+    "completion_tokens": 1099,
+    "total_tokens": 2730,
+    "article_title": "Optimiser l'accueil téléphonique médical avec un agent vocal IA"
+  },
+  {
+    "timestamp": "2026-01-13T14:47:47.603462",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1237,
+    "completion_tokens": 180,
+    "total_tokens": 1417,
+    "article_title": "Optimiser l'accueil téléphonique médical avec un agent vocal IA"
+  },
+  {
+    "timestamp": "2026-01-13T14:58:37.854585",
+    "operation": "generate_variants",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 770,
+    "completion_tokens": 500,
+    "total_tokens": 1270,
+    "topic": "L'ia vocal dans les syndic immobiliers"
+  },
+  {
+    "timestamp": "2026-01-13T14:59:31.297700",
+    "operation": "generate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1797,
+    "completion_tokens": 1628,
+    "total_tokens": 3425,
+    "article_title": "Réduire les Coûts Opérationnels des Syndics avec un Standardiste IA"
+  },
+  {
+    "timestamp": "2026-01-13T15:00:03.653300",
+    "operation": "style_refinement",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2226,
+    "completion_tokens": 1610,
+    "total_tokens": 3836
+  },
+  {
+    "timestamp": "2026-01-13T15:00:22.328436",
+    "operation": "score_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 3051,
+    "completion_tokens": 836,
+    "total_tokens": 3887,
+    "topic": "L'ia vocal dans les syndic immobiliers"
+  },
+  {
+    "timestamp": "2026-01-13T15:01:06.258270",
+    "operation": "regenerate_with_scoring",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2997,
+    "completion_tokens": 1628,
+    "total_tokens": 4625,
+    "topic": "L'ia vocal dans les syndic immobiliers"
+  },
+  {
+    "timestamp": "2026-01-13T15:01:35.420869",
+    "operation": "score_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 3070,
+    "completion_tokens": 905,
+    "total_tokens": 3975,
+    "topic": "L'ia vocal dans les syndic immobiliers"
+  },
+  {
+    "timestamp": "2026-01-13T15:02:10.546163",
+    "operation": "regenerate_with_scoring",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 3078,
+    "completion_tokens": 1536,
+    "total_tokens": 4614,
+    "topic": "L'ia vocal dans les syndic immobiliers"
+  },
+  {
+    "timestamp": "2026-01-13T15:02:37.342203",
+    "operation": "score_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2978,
+    "completion_tokens": 864,
+    "total_tokens": 3842,
+    "topic": "L'ia vocal dans les syndic immobiliers"
+  },
+  {
+    "timestamp": "2026-01-13T15:03:21.275371",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1917,
+    "completion_tokens": 2191,
+    "total_tokens": 4108
+  },
+  {
+    "timestamp": "2026-01-13T15:03:46.665521",
+    "operation": "translate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1664,
+    "completion_tokens": 1148,
+    "total_tokens": 2812,
+    "article_title": "Réduire les Coûts Opérationnels des Syndics avec un Standardiste IA"
+  },
+  {
+    "timestamp": "2026-01-13T15:03:51.304317",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1286,
+    "completion_tokens": 178,
+    "total_tokens": 1464,
+    "article_title": "Réduire les Coûts Opérationnels des Syndics avec un Standardiste IA"
+  },
+  {
+    "timestamp": "2026-01-13T15:52:26.568678",
+    "operation": "generate_variants",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 786,
+    "completion_tokens": 468,
+    "total_tokens": 1254,
+    "topic": "Pourquoi Rounded est la meilleure solution pour construire des agents vocaux fiable en france"
+  },
+  {
+    "timestamp": "2026-01-13T15:54:20.034405",
+    "operation": "generate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1741,
+    "completion_tokens": 1464,
+    "total_tokens": 3205,
+    "article_title": "Les critères essentiels pour choisir une solution d'accueil téléphonique IA"
+  },
+  {
+    "timestamp": "2026-01-13T15:54:47.844825",
+    "operation": "style_refinement",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2816,
+    "completion_tokens": 1492,
+    "total_tokens": 4308
+  },
+  {
+    "timestamp": "2026-01-13T15:55:02.911527",
+    "operation": "score_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2937,
+    "completion_tokens": 822,
+    "total_tokens": 3759,
+    "topic": "Pourquoi Rounded est la meilleure solution pour construire des agents vocaux fiable en france"
+  },
+  {
+    "timestamp": "2026-01-13T15:55:32.371344",
+    "operation": "regenerate_with_scoring",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2873,
+    "completion_tokens": 1532,
+    "total_tokens": 4405,
+    "topic": "Pourquoi Rounded est la meilleure solution pour construire des agents vocaux fiable en france"
+  },
+  {
+    "timestamp": "2026-01-13T15:55:50.709703",
+    "operation": "score_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2977,
+    "completion_tokens": 964,
+    "total_tokens": 3941,
+    "topic": "Pourquoi Rounded est la meilleure solution pour construire des agents vocaux fiable en france"
+  },
+  {
+    "timestamp": "2026-01-13T15:56:34.661728",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 2614,
+    "completion_tokens": 2173,
+    "total_tokens": 4787
+  },
+  {
+    "timestamp": "2026-01-13T15:56:58.302098",
+    "operation": "translate_article",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1660,
+    "completion_tokens": 1146,
+    "total_tokens": 2806,
+    "article_title": "Solution accueil téléphonique : pourquoi choisir Rounded en France"
+  },
+  {
+    "timestamp": "2026-01-13T15:57:03.419943",
+    "operation": "optimize_seo",
+    "model": "gpt-4o-mini",
+    "prompt_tokens": 1284,
+    "completion_tokens": 174,
+    "total_tokens": 1458,
+    "article_title": "Solution accueil téléphonique : pourquoi choisir Rounded en France"
+  }
+]
